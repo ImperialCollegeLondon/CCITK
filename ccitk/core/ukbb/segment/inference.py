@@ -25,7 +25,7 @@ from tqdm import tqdm
 
 
 def segment_sa_la(data_dir: Path, seq_name: str, model_path: Path, seg4: bool = False, process_seq: bool = True,
-                  save_seg: bool = True):
+                  save_seg: bool = True, output_dir: Path = None):
     """ Deployment parameters """
 
     with tf.Session() as sess:
@@ -44,22 +44,26 @@ def segment_sa_la(data_dir: Path, seq_name: str, model_path: Path, seg4: bool = 
         table_time = []
         for data in tqdm(data_list):
             print(data)
-            data_dir = data_dir.joinpath(data)
+            subject_dir = data_dir.joinpath(data)
+            if output_dir is None:
+                output_subject_dir = subject_dir
+            else:
+                output_subject_dir = output_dir.joinpath(data)
 
             if seq_name == 'la_4ch' and seg4:
-                seg_name = data_dir.joinpath(f"seg4_{seq_name}.nii.gz")
+                seg_name = output_subject_dir.joinpath(f"seg4_{seq_name}.nii.gz")
             else:
-                seg_name = data_dir.joinpath(f"seg_{seq_name}.nii.gz")
+                seg_name = output_subject_dir.joinpath(f"seg_{seq_name}.nii.gz")
             if seg_name.exists():
                 continue
 
             if process_seq:
                 # Process the temporal sequence
-                image_name = data_dir.joinpath(f"{seq_name}.nii.gz")
+                image_name = subject_dir.joinpath(f"{seq_name}.nii.gz")
 
                 if not image_name.exists():
                     print('  Directory {0} does not contain an image with file '
-                          'name {1}. Skip.'.format(data_dir, image_name.name))
+                          'name {1}. Skip.'.format(subject_dir, image_name.name))
                     continue
 
                 # Read the image
@@ -123,33 +127,33 @@ def segment_sa_la(data_dir: Path, seq_name: str, model_path: Path, seg4: bool = 
                     nim2 = nib.Nifti1Image(pred, nim.affine)
                     nim2.header['pixdim'] = nim.header['pixdim']
                     if seq_name == 'la_4ch' and seg4:
-                        seg_name = data_dir.joinpath(f"seg4_{seq_name}.nii.gz")
+                        seg_name = output_subject_dir.joinpath(f"seg4_{seq_name}.nii.gz")
                     else:
-                        seg_name = data_dir.joinpath(f"seg_{seq_name}.nii.gz")
+                        seg_name = output_subject_dir.joinpath(f"seg_{seq_name}.nii.gz")
 
                     nib.save(nim2, str(seg_name))
 
                     for fr in ['ED', 'ES']:
                         nib.save(nib.Nifti1Image(orig_image[:, :, :, k[fr]], nim.affine),
-                                 str(data_dir.joinpath(f"{seq_name}_{fr}.nii.gz")))
+                                 str(output_subject_dir.joinpath(f"{seq_name}_{fr}.nii.gz")))
                         if seq_name == 'la_4ch' and seg4:
-                            seg_name = data_dir.joinpath(f"seg4_{seq_name}_{fr}.nii.gz")
+                            seg_name = output_subject_dir.joinpath(f"seg4_{seq_name}_{fr}.nii.gz")
                         else:
-                            seg_name = data_dir.joinpath(f"seg_{seq_name}_{fr}.nii.gz")
+                            seg_name = output_subject_dir.joinpath(f"seg_{seq_name}_{fr}.nii.gz")
 
                         nib.save(nib.Nifti1Image(pred[:, :, :, k[fr]], nim.affine), str(seg_name))
             else:
                 # Process ED and ES time frames
-                image_ED_name = data_dir.joinpath(f"{seq_name}_ED.nii.gz")
-                image_ES_name = data_dir.joinpath(f"{seq_name}_ES.nii.gz")
+                image_ED_name = subject_dir.joinpath(f"{seq_name}_ED.nii.gz")
+                image_ES_name = subject_dir.joinpath(f"{seq_name}_ES.nii.gz")
                 if not image_ED_name.exists() or not image_ES_name.exists():
                     print('  Directory {0} does not contain an image with '
-                          'file name {1} or {2}. Skip.'.format(data_dir, image_ED_name.name, image_ES_name.name))
+                          'file name {1} or {2}. Skip.'.format(subject_dir, image_ED_name.name, image_ES_name.name))
                     continue
 
                 measure = {}
                 for fr in ['ED', 'ES']:
-                    image_name = data_dir.joinpath(f"{seq_name}_{fr}.nii.gz")
+                    image_name = subject_dir.joinpath(f"{seq_name}_{fr}.nii.gz")
 
                     # Read the image
                     print('  Reading {} ...'.format(image_name))
@@ -197,9 +201,9 @@ def segment_sa_la(data_dir: Path, seq_name: str, model_path: Path, seg4: bool = 
                         nim2 = nib.Nifti1Image(pred, nim.affine)
                         nim2.header['pixdim'] = nim.header['pixdim']
                         if seq_name == 'la_4ch' and seg4:
-                            seg_name = data_dir.joinpath(f"seg4_{seq_name}_{fr}.nii.gz")
+                            seg_name = output_subject_dir.joinpath(f"seg4_{seq_name}_{fr}.nii.gz")
                         else:
-                            seg_name = data_dir.joinpath(f"seg_{seq_name}_{fr}.nii.gz")
+                            seg_name = output_subject_dir.joinpath(f"seg_{seq_name}_{fr}.nii.gz")
 
                         nib.save(nim2, str(seg_name))
 
@@ -232,15 +236,15 @@ def segment_ao(data_dir: str, model: str, model_path: str, seq_name: str, time_s
         table = []
         for data in tqdm(data_list):
             print(data)
-            data_dir = os.path.join(data_dir, data)
+            subject_dir = os.path.join(data_dir, data)
 
             if process_seq:
                 # Process the temporal sequence
-                image_name = '{0}/{1}.nii.gz'.format(data_dir, seq_name)
+                image_name = '{0}/{1}.nii.gz'.format(subject_dir, seq_name)
 
                 if not os.path.exists(image_name):
                     print('  Directory {0} does not contain an image with file name {1}. '
-                          'Skip.'.format(data_dir, os.path.basename(image_name)))
+                          'Skip.'.format(subject_dir, os.path.basename(image_name)))
                     continue
 
                 # Read the image
@@ -359,7 +363,7 @@ def segment_ao(data_dir: str, model: str, model_path: str, seq_name: str, time_s
                     print('  Saving segmentation ...')
                     nim2 = nib.Nifti1Image(pred, nim.affine)
                     nim2.header['pixdim'] = nim.header['pixdim']
-                    nib.save(nim2, '{0}/seg_{1}.nii.gz'.format(data_dir, seq_name))
+                    nib.save(nim2, '{0}/seg_{1}.nii.gz'.format(subject_dir, seq_name))
 
                 seg_time = time.time() - start_seg_time
                 print('  Segmentation time = {:3f}s'.format(seg_time))
@@ -371,16 +375,16 @@ def segment_ao(data_dir: str, model: str, model_path: str, seq_name: str, time_s
                     exit(0)
 
                 # Process ED and ES time frames
-                image_ED_name = '{0}/{1}_{2}.nii.gz'.format(data_dir, seq_name, 'ED')
-                image_ES_name = '{0}/{1}_{2}.nii.gz'.format(data_dir, seq_name, 'ES')
+                image_ED_name = '{0}/{1}_{2}.nii.gz'.format(subject_dir, seq_name, 'ED')
+                image_ES_name = '{0}/{1}_{2}.nii.gz'.format(subject_dir, seq_name, 'ES')
                 if not os.path.exists(image_ED_name) or not os.path.exists(image_ES_name):
                     print('  Directory {0} does not contain an image with file name {1} or {2}. '
-                          'Skip.'.format(data_dir, os.path.basename(image_ED_name), os.path.basename(image_ES_name)))
+                          'Skip.'.format(subject_dir, os.path.basename(image_ED_name), os.path.basename(image_ES_name)))
                     continue
 
                 measure = {}
                 for fr in ['ED', 'ES']:
-                    image_name = '{0}/{1}_{2}.nii.gz'.format(data_dir, seq_name, fr)
+                    image_name = '{0}/{1}_{2}.nii.gz'.format(subject_dir, seq_name, fr)
 
                     # Read the image
                     # image: XYZ
@@ -430,7 +434,7 @@ def segment_ao(data_dir: str, model: str, model_path: str, seq_name: str, time_s
                         print('  Saving segmentation ...')
                         nim2 = nib.Nifti1Image(pred, nim.affine)
                         nim2.header['pixdim'] = nim.header['pixdim']
-                        nib.save(nim2, '{0}/seg_{1}_{2}.nii.gz'.format(data_dir, seq_name, fr))
+                        nib.save(nim2, '{0}/seg_{1}_{2}.nii.gz'.format(subject_dir, seq_name, fr))
 
                 processed_list += [data]
 
