@@ -1,0 +1,60 @@
+
+#
+# Sparse non-rigid registration parameters
+#
+
+Bending penalty                     = 0.0001
+Sparsity constrain                  = 0.04
+Coarsest spacing                    = 512
+Finest spacing                      = 4
+
+#
+# Registration parameters
+#
+
+No. of resolution levels          = 3
+No. of bins                       = 64
+Epsilon                           = 1e-005
+Padding value                     = -1
+Source padding value              = -1
+Similarity measure                = NMI
+Interpolation mode                = BSpline
+
+#
+# Registration parameters for resolution level 1
+#
+
+Resolution level                  = 1
+Target blurring (in mm)           = 0
+Target resolution (in mm)         = 0 0 0
+Source blurring (in mm)           = 0
+Source resolution (in mm)         = 0 0 0
+No. of iterations                 = 100
+Minimum length of steps           = 0.01
+Maximum length of steps           = 1
+
+#
+# Registration parameters for resolution level 2
+#
+
+Resolution level                  = 2
+Target blurring (in mm)           = 0
+Target resolution (in mm)         = 2.5 2.5 4
+Source blurring (in mm)           = 0
+Source resolution (in mm)         = 2.5 2.5 4
+No. of iterations                 = 100
+Minimum length of steps           = 0.01
+Maximum length of steps           = 2
+
+#
+# Registration parameters for resolution level 3
+#
+
+Resolution level                  = 3
+Target blurring (in mm)           = 0
+Target resolution (in mm)         = 5 5 8
+Source blurring (in mm)           = 0
+Source resolution (in mm)         = 5 5 8
+No. of iterations                 = 100
+Minimum length of steps           = 0.01
+Maximum length of steps           = 4
