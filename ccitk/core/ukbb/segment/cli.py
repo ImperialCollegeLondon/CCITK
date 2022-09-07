@@ -7,7 +7,7 @@ def parse_args():
     parser = ArgumentParser()
 
     parser.add_argument(
-        "--data-dir", default="/vol/bitbucket/wbai/own_work/ukbb_cardiac_demo",
+        "--data-dir", required=True,
         type=str, help='Path to the data set directory, under which images '
                        'are organised in subdirectories for each subject.'
     )

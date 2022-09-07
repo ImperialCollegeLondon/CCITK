@@ -16,6 +16,7 @@ setup(
         "console_scripts": [
             "ccitk-ukbb-download = ccitk.core.ukbb.download:main",
             "ccitk-ukbb-convert = ccitk.core.ukbb.convert:main",
+            "ccitk-ukbb-segment = ccitk.core.ukbb.segment:main",
             "ccitk-ukbb-analyze = ccitk.core.ukbb.analyze:main",
         ]
     },
