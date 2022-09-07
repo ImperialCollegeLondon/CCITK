@@ -17,7 +17,8 @@ import time
 import math
 import numpy as np
 import nibabel as nib
-import tensorflow as tf
+import tensorflow.compat.v1 as tf
+tf.disable_v2_behavior()
 from ccitk.applications.image import rescale_intensity
 from ccitk.applications.image import normalise_intensity
 from pathlib import Path
@@ -28,8 +29,8 @@ def segment_sa_la(data_dir: Path, seq_name: str, model_path: Path, seg4: bool = 
                   save_seg: bool = True, output_dir: Path = None):
     """ Deployment parameters """
 
-    with tf.compat.v1.Session() as sess:
-        sess.run(tf.compat.v1.global_variables_initializer())
+    with tf.Session() as sess:
+        sess.run(tf.global_variables_initializer())
 
         # Import the computation graph and restore the variable values
         saver = tf.train.import_meta_graph('{0}.meta'.format(str(model_path)))
