@@ -11,6 +11,8 @@ def parse_args():
         type=str, help='Path to the data set directory, under which images '
                        'are organised in subdirectories for each subject.'
     )
+
+    parser.add_argument("--output-dir", default=None,type=str)
     parser.add_argument(
         "--sa-model-path", default=None,
         type=str, help='Path to the saved trained model.',
@@ -47,6 +49,10 @@ def parse_args():
 
 def main():
     args = parse_args()
+    if args.output_dir is not None:
+        output_dir = Path(args.output_dir).absolute()
+    else:
+        output_dir = None
 
     # short-axis segmentations
     if args.sa_model_path is not None:
@@ -57,6 +63,7 @@ def main():
             process_seq=args.process_seg,
             save_seg=args.save_seg,
             seg4=False,
+            output_dir=output_dir,
         )
 
     # long-axis segmentations
@@ -68,6 +75,7 @@ def main():
             process_seq=args.process_seg,
             save_seg=args.save_seg,
             seg4=False,
+            output_dir=output_dir,
         )
     if args.la_4ch_model_path is not None:
         segment_sa_la(
@@ -77,6 +85,7 @@ def main():
             process_seq=args.process_seg,
             save_seg=args.save_seg,
             seg4=False,
+            output_dir=output_dir,
         )
     if args.la_4ch_seg4_model_path is not None and args.seg4:
         segment_sa_la(
@@ -86,6 +95,7 @@ def main():
             process_seq=args.process_seg,
             save_seg=args.save_seg,
             seg4=args.seg4,
+            output_dir=output_dir,
         )
 
     if args.ao_model_path is not None:
