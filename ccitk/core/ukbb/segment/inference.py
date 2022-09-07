@@ -47,7 +47,7 @@ def segment_sa_la(data_dir: Path, seq_name: str, model_path: Path, seg4: bool = 
             print(data)
             subject_dir = data_dir.joinpath(data)
             if output_dir is None:
-                output_subject_dir = subject_di
+                output_subject_dir = subject_dir
             else:
                 output_subject_dir = output_dir.joinpath(data)
                 output_subject_dir.mkdir(parents=True, exist_ok=True)
