@@ -29,7 +29,7 @@ def segment_sa_la(data_dir: Path, seq_name: str, model_path: Path, seg4: bool = 
     """ Deployment parameters """
 
     with tf.compat.v1.Session() as sess:
-        sess.run(tf.global_variables_initializer())
+        sess.run(tf.compat.v1.global_variables_initializer())
 
         # Import the computation graph and restore the variable values
         saver = tf.train.import_meta_graph('{0}.meta'.format(str(model_path)))
