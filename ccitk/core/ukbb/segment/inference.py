@@ -28,7 +28,7 @@ def segment_sa_la(data_dir: Path, seq_name: str, model_path: Path, seg4: bool = 
                   save_seg: bool = True, output_dir: Path = None):
     """ Deployment parameters """
 
-    with tf.Session() as sess:
+    with tf.compat.v1.Session() as sess:
         sess.run(tf.global_variables_initializer())
 
         # Import the computation graph and restore the variable values
