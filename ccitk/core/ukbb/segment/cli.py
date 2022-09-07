@@ -34,7 +34,7 @@ def parse_args():
         type=str, help='Path to the saved trained model.',
     )
 
-    parser.add_argument("--process-seg", action="store_true", help="Process a time sequence of images.")
+    parser.add_argument("--process-seq", action="store_true", help="Process a time sequence of images.")
     parser.add_argument("--save-seg", action="store_true", help="Save segmentation")
     parser.add_argument(
         "--seg4", action="store_true",
@@ -60,7 +60,7 @@ def main():
             data_dir=Path(args.data_dir),
             seq_name="sa",
             model_path=Path(args.sa_model_path),
-            process_seq=args.process_seg,
+            process_seq=args.process_seq,
             save_seg=args.save_seg,
             seg4=False,
             output_dir=output_dir,
@@ -72,7 +72,7 @@ def main():
             data_dir=Path(args.data_dir),
             seq_name="la_2ch",
             model_path=Path(args.la_2ch_model_path),
-            process_seq=args.process_seg,
+            process_seq=args.process_seq,
             save_seg=args.save_seg,
             seg4=False,
             output_dir=output_dir,
@@ -82,7 +82,7 @@ def main():
             data_dir=Path(args.data_dir),
             seq_name="la_4ch",
             model_path=Path(args.la_4ch_model_path),
-            process_seq=args.process_seg,
+            process_seq=args.process_seq,
             save_seg=args.save_seg,
             seg4=False,
             output_dir=output_dir,
@@ -92,7 +92,7 @@ def main():
             data_dir=Path(args.data_dir),
             seq_name="la_4ch",
             model_path=Path(args.la_4ch_seg4_model_path),
-            process_seq=args.process_seg,
+            process_seq=args.process_seq,
             save_seg=args.save_seg,
             seg4=args.seg4,
             output_dir=output_dir,
@@ -104,7 +104,7 @@ def main():
             model="UNet",
             seq_name="ao",
             model_path=str(Path(args.la_4ch_seg4_model_path)),
-            process_seq=args.process_seg,
+            process_seq=args.process_seq,
             save_seg=args.save_seg,
             z_score=True,
             weight_R=5,
