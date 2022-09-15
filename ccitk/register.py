@@ -2,9 +2,10 @@ import mirtk
 from pathlib import Path
 from typing import Union, List, Dict
 import vtk
-from .image import set_affine
-from ccitk.core.common.resource import PhaseMesh
 import numpy as np
+
+from ccitk.image import set_affine
+from ccitk.core.common.resource import PhaseMesh
 
 """
     Points
@@ -152,47 +153,6 @@ def register_points(
         **kwargs
     )
     return output_path
-#
-#
-# def transform_points(
-#         moving: Union[Path, List[Path]], output_path: Path, fixed: Union[Path, List[Path]] = None,
-#         model: str = None, symmetric: bool = False, dofin: Path = None, dofout: Path = None,
-#         overwrite: bool = False, method: str = "ICP", parin: Path = None, ds: int = None
-# ):
-#     output_dir = output_path.parent
-#     output_dir.mkdir(exist_ok=True, parents=True)
-#     assert model in ["Rigid", "Affine", "FFD", "Similarity"], \
-#         f"Model must be either Rigid, Affine, FFD, or Similarity, not {model}."
-#     if fixed is not None:
-#         # Do registration
-#         if dofout is None:
-#             dofout = output_dir.joinpath(f"{model.lower()}_{output_path.stem}.dof.gz")
-#         if not dofout.exists() or overwrite:
-#             if method == "ICP" and model in ["Rigid", "Affine", "Similarity"]:
-#                 dofin = register_points_ICP(
-#                     moving=moving,
-#                     fixed=fixed,
-#                     output_path=dofout,
-#                     model=model,
-#                     symmetric=symmetric,
-#                     dofin=dofin,
-#                 )
-#             else:
-#                 dofin = register_points(
-#                     moving=moving,
-#                     fixed=fixed,
-#                     output_path=dofout,
-#                     model=model,
-#                     dofin=dofin,
-#                     parin=parin,
-#                     ds=ds,
-#                 )
-#     mirtk.transform_points(
-#         str(moving),
-#         str(output_path),
-#         dofin=str(dofin),
-#     )
-#     return output_path, dofin
 
 
 """
@@ -204,26 +164,6 @@ def register_labels_affine(
         fixed_label: Path, moving_label: Path, labels: List,
         output_path: Path, parin: Path, dofin: Path = None, overwrite: bool = False,
 ):
-    # temp_dir = output_path.parent.joinpath("temp")
-    # temp_dir.mkdir(parents=True, exist_ok=True)
-    # landmark_dof = temp_dir.joinpath("landmarks.dof.gz")
-    # if not landmark_dof.exists() or overwrite:
-    #     landmark_dof = register_landmarks(
-    #         moving=moving_landmarks,
-    #         fixed=fixed_landmarks,
-    #         output_path=landmark_dof,
-    #         mirtk=False,
-    #         overwrite=overwrite
-    #     )
-    # lm_moved_label = temp_dir.joinpath("moved_label.nii.gz")
-    # if not lm_moved_label.exists() or overwrite:
-    #     mirtk.transform_image(
-    #         str(moving_label),
-    #         str(lm_moved_label),
-    #         dofin=str(landmark_dof),
-    #         target=str(fixed_image),
-    #         interp="NN",
-    #     )
 
     moving_labels = []
     fixed_labels = []
@@ -322,7 +262,6 @@ def transform_phase_mesh(
                 **kwargs,
             )
         return output_mesh
-
 
 
 def transform_mesh_using_landmarks(

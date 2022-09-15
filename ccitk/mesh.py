@@ -2,14 +2,15 @@ __all__ = [
     "read_vkt_mesh",
     "surface_mesh_to_volumetric_mesh",
     "decimate_mesh",
+    "extract_mesh_from_segmentation",
 ]
 
 import vtk
-import numpy as np
 import shutil
+import numpy as np
 from pathlib import Path
 from vtk.util.numpy_support import vtk_to_numpy
-from typing import Tuple, List, Union
+from typing import Tuple, List
 
 
 def read_vkt_mesh(vtk_path: Path, affine: np.ndarray = None) -> Tuple[np.ndarray, np.ndarray]:

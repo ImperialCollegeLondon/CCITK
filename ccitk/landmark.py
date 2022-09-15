@@ -1,5 +1,8 @@
-import nibabel as nib
+__all__ = [
+    "extract_simple_landmarks",
+]
 import vtk
+import nibabel as nib
 import numpy as np
 from typing import List
 from pathlib import Path

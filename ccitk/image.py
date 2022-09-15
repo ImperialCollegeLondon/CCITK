@@ -10,8 +10,8 @@ __all__ = [
 import numpy as np
 from pathlib import Path
 import nibabel as nib
+from scipy.ndimage import zoom
 from typing import Tuple, List, Union
-from scipy.ndimage import zoom, rotate
 
 
 def read_nii_image(path: Path, affine: bool = True) -> Union[Tuple[np.ndarray, np.ndarray], np.ndarray]:

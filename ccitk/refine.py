@@ -1,12 +1,17 @@
+__all__ = [
+    "select_top_similar_atlases",
+    "refine_segmentation_with_atlases",
+]
+
 import mirtk
-mirtk.subprocess.showcmd = True
-import vtk
 import numpy as np
 from pathlib import Path
 from ccitk.register import register_landmarks, register_labels_affine
 from ccitk.image import set_affine
 from typing import List
 import SimpleITK as sitk
+
+mirtk.subprocess.showcmd = True
 
 
 def select_top_similar_atlases(
@@ -193,4 +198,3 @@ def refine_segmentation_with_atlases(
         fused_label, str(output_path), imageIO="NiftiImageIO"
     )
     return output_path
-
