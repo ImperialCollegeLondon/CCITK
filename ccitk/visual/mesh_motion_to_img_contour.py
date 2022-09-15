@@ -10,7 +10,7 @@ import meshcut
 import itertools
 import numpy.linalg as la
 import nibabel as nib
-from ccitk.applications.image import read_nii_image
+from ccitk.image import read_nii_image
 from matplotlib import pyplot as plt
 import imageio
 # import mirtk
