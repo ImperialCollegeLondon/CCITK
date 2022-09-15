@@ -8,8 +8,8 @@ from typing import Union
 from ccitk.core.common.resource import CineImages, PhaseImage
 from ccitk.core.common.constants import DEFAULT_MODEL_PATH
 
-from ccitk.core.segmentor.torch import TorchSegmentor
-from ccitk.core.segmentor import CineSegmentor
+from ccitk.core.segment.torch import TorchSegmentor
+from ccitk.core.segment import CineSegmentor
 
 
 def segment_4d_image(

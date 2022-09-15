@@ -6,8 +6,8 @@ from argparse import ArgumentParser
 
 from ccitk.core.common.resource import PhaseImage
 from ccitk.core.common.config import get_conf
-from ccitk.core.segmentor.torch.network import UNet
-from ccitk.core.segmentor.torch import TorchSegmentor
+from ccitk.core.segment.torch.network import UNet
+from ccitk.core.segment.torch import TorchSegmentor
 
 
 def parse_args():

@@ -6,9 +6,10 @@ __all__ = [
 
 import vtk
 import numpy as np
+import shutil
 from pathlib import Path
 from vtk.util.numpy_support import vtk_to_numpy
-from typing import Tuple
+from typing import Tuple, List, Union
 
 
 def read_vkt_mesh(vtk_path: Path, affine: np.ndarray = None) -> Tuple[np.ndarray, np.ndarray]:
@@ -106,4 +107,36 @@ def decimate_mesh(mesh_path: Path, output_path: Path, downsample_rate: float, pr
             dofin=str(output_path.parent.joinpath("downsample.dof.gz")),
         )
         output_path.parent.joinpath("downsample.dof.gz").unlink()
+    return output_path
+
+
+def extract_mesh_from_segmentation(
+        segmentation: Path, output_path: Path, labels: List[int] = None, phase: str = None, iso_value: int = 120,
+        blur: int = 2, overwrite: bool = False
+):
+    import mirtk
+    if not output_path.exists() or overwrite:
+        if labels is not None:
+            if len(labels) > 0:
+                temp_dir = output_path.parent.joinpath("temp")
+                temp_dir.mkdir(exist_ok=True, parents=True)
+                output = temp_dir.joinpath(f"{segmentation.stem}_{phase}.nii.gz") \
+                    if phase is not None else temp_dir.joinpath(f"{segmentation.stem}.nii.gz")
+                mirtk.calculate_element_wise(
+                    str(segmentation),
+                    "-label", *labels, set=255, pad=0,
+                    output=str(output),
+                )
+                mirtk.extract_surface(
+                    str(output),
+                    str(output_path),
+                    isovalue=iso_value, blur=blur,
+                )
+                shutil.rmtree(str(temp_dir))
+                return output_path
+        mirtk.extract_surface(
+            str(segmentation),
+            str(output_path),
+            isovalue=iso_value, blur=blur,
+        )
     return output_path

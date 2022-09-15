@@ -4,8 +4,8 @@ import numpy as np
 import nibabel as nib
 from typing import Tuple
 from pathlib import Path
-from ccitk.core.segmentor import Segmentor
-from ccitk.core.segmentor.utils import refined_mask
+from ccitk.core.segment import Segmentor
+from ccitk.core.segment.utils import refined_mask
 from ccitk.core.nn.torch.data import rescale_intensity
 from ccitk.core.nn.torch import prepare_tensors
 
