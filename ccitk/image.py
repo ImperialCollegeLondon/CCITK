@@ -5,6 +5,10 @@ __all__ = [
     "resize_label",
     "read_nii_label",
     "set_affine",
+    "split_volume",
+    "split_sequence",
+    "categorical_dice",
+    "one_hot_encode_label"
 ]
 
 import numpy as np
@@ -95,3 +99,65 @@ def set_affine(from_image: Path, to_image: Path):
     nim3 = nib.Nifti1Image(image, nim.affine)
     nim3.header['pixdim'] = nim.header['pixdim']
     nib.save(nim3, str(to_image))
+
+
+def split_volume(image_name, output_name):
+    """ Split an image volume into a number of slices. """
+    nim = nib.load(image_name)
+    Z = nim.header['dim'][3]
+    affine = nim.affine
+    image = nim.get_data()
+
+    for z in range(Z):
+        image_slice = image[:, :, z]
+        image_slice = np.expand_dims(image_slice, axis=2)
+        affine2 = np.copy(affine)
+        affine2[:3, 3] += z * affine2[:3, 2]
+        nim2 = nib.Nifti1Image(image_slice, affine2)
+        nib.save(nim2, '{0}{1:02d}.nii.gz'.format(output_name, z))
+
+
+def split_sequence(image_name, output_name):
+    """ Split an image sequence into a number of time frames. """
+    nim = nib.load(image_name)
+    T = nim.header['dim'][4]
+    affine = nim.affine
+    image = nim.get_data()
+
+    for t in range(T):
+        image_fr = image[:, :, :, t]
+        nim2 = nib.Nifti1Image(image_fr, affine)
+        nib.save(nim2, '{0}{1:02d}.nii.gz'.format(output_name, t))
+
+
+def categorical_dice(prediction: np.ndarray, truth: np.ndarray, k: int, is_one_hot: bool = False,
+                     n_classes: int = None, epsilon: float = 0.001):
+    """
+        Dice overlap metric for label k
+        prediction and truth can be one-hot encoded or integer encoded.
+        If one-hot encoded, they are of the shape (K, D, H, W), or (K, H, W)
+        If integer encoded, they are of the shape (D, H, W), or (H, W), and n_classes must be provided.
+        epsilon is for numerical stability, to avoid 0/0
+    """
+    if not is_one_hot:
+        assert n_classes is not None
+        prediction = one_hot_encode_label(prediction, n_classes)
+
+    A = (np.argmax(prediction, axis=1) == k)
+    B = (np.argmax(truth, axis=1) == k)
+    return 2 * np.sum(A * B) / (np.sum(A) + np.sum(B) + epsilon)
+
+
+def one_hot_encode_label(label: np.ndarray, n_classes: int):
+    """
+        Label can be of the shape (D, H, W), or (H, W)
+    """
+    label_flat = label.flatten()
+    n_data = len(label_flat)
+    label_one_hot = np.zeros((n_data, n_classes), dtype='int16')
+    label_one_hot[range(n_data), label_flat] = 1
+    if len(label.shape) == 3:
+        label_one_hot = label_one_hot.reshape((label.shape[0], label.shape[1], label.shape[2], n_classes))
+    else:
+        label_one_hot = label_one_hot.reshape((label.shape[0], label.shape[1], n_classes))
+    return label_one_hot

@@ -1,0 +1,91 @@
+
+#
+# Non-rigid registration parameters
+#
+
+Lambda1                           = 0.000001
+Lambda2                           = 0
+Lambda3                           = 0
+Speedup factor                    = 2
+Control point spacing in X        = 48
+Control point spacing in Y        = 48
+Control point spacing in Z        = 48
+Subdivision                       = True
+MFFDMode                          = True
+
+#
+# Registration parameters
+#
+
+No. of resolution levels          = 5
+No. of bins                       = 64
+Epsilon                           = 0.000001
+Padding value                     = -1
+Similarity measure                = LC
+Interpolation mode                = NN
+Optimization method               = GradientDescent
+
+#
+# Registration parameters for resolution level 1
+#
+
+Resolution level                  = 1
+Target blurring (in mm)           = 0
+Target resolution (in mm)         = 0 0 0
+Source blurring (in mm)           = 0
+Source resolution (in mm)         = 0 0 0
+No. of iterations                 = 100
+No. of steps                      = 5
+Length of steps                   = 1
+
+#
+# Registration parameters for resolution level 2
+#
+
+Resolution level                  = 2
+Target blurring (in mm)           = 0
+Target resolution (in mm)         = 0 0 0
+Source blurring (in mm)           = 0
+Source resolution (in mm)         = 0 0 0
+No. of iterations                 = 100
+No. of steps                      = 5
+Length of steps                   = 2
+
+#
+# Registration parameters for resolution level 3
+#
+
+Resolution level                  = 3
+Target blurring (in mm)           = 0
+Target resolution (in mm)         = 0 0 0
+Source blurring (in mm)           = 0
+Source resolution (in mm)         = 0 0 0
+No. of iterations                 = 100
+No. of steps                      = 5
+Length of steps                   = 4
+
+#
+# Registration parameters for resolution level 4
+#
+
+Resolution level                  = 4
+Target blurring (in mm)           = 0
+Target resolution (in mm)         = 2 2 2
+Source blurring (in mm)           = 0
+Source resolution (in mm)         = 2 2 2
+No. of iterations                 = 100
+No. of steps                      = 5
+Length of steps                   = 4
+
+#
+# Registration parameters for resolution level 4
+#
+
+Resolution level                  = 5
+Target blurring (in mm)           = 0
+Target resolution (in mm)         = 2 2 2
+Source blurring (in mm)           = 0
+Source resolution (in mm)         = 2 2 2
+No. of iterations                 = 100
+No. of steps                      = 5
+Length of steps                   = 4

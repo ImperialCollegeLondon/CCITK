@@ -1,10 +1,10 @@
 from pathlib import Path
 from typing import Union
-from ccitk.core.common.resource import CineImages, PhaseImage
-from ccitk.core.common.constants import DEFAULT_MODEL_PATH
+from ccitk.resource import CineImages, PhaseImage
+from ccitk.cmr_segment.common.constants import DEFAULT_MODEL_PATH
 
-from ccitk.core.segment.torch import TorchSegmentor
-from ccitk.core.segment import CineSegmentor
+from ccitk.cmr_segment.segmentor.torch import TorchSegmentor
+from ccitk.cmr_segment.segmentor import CineSegmentor
 
 
 def segment_4d_image(

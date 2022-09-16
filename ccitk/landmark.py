@@ -1,6 +1,7 @@
 __all__ = [
     "extract_simple_landmarks",
 ]
+
 import vtk
 import nibabel as nib
 import numpy as np

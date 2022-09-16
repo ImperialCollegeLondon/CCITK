@@ -5,11 +5,12 @@ __all__ = [
 
 import mirtk
 import numpy as np
-from pathlib import Path
-from ccitk.register import register_landmarks, register_labels_affine
-from ccitk.image import set_affine
 from typing import List
 import SimpleITK as sitk
+from pathlib import Path
+from ccitk.image import set_affine
+from ccitk.register import register_landmarks, register_labels_affine
+
 
 mirtk.subprocess.showcmd = True
 

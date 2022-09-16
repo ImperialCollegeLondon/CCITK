@@ -1,0 +1,55 @@
+
+#
+# Registration parameters
+#
+
+No. of resolution levels          = 1
+No. of bins                       = 64
+Epsilon                           = 0.0001
+# Padding value                     = 0
+Similarity measure                = SSD
+Interpolation mode                = Linear
+Optimization method               = GradientDescent
+Energy function                   = SIM[LV](I(1), I(4) o T) + SIM[LVM](I(2), I(5) o T) + SIM[RV](I(3), I(6) o T)
+
+#
+# Registration parameters for resolution level 1
+#
+
+Resolution level                  = 1
+Target blurring (in mm)           = 5
+Target resolution (in mm)         = 0 0 0
+Source blurring (in mm)           = 5
+Source resolution (in mm)         = 0 0 0
+No. of iterations                 = 20
+No. of steps                      = 4
+Length of steps                   = 2
+Delta                             = 0
+
+#
+# Registration parameters for resolution level 2
+#
+
+Resolution level                  = 2
+Target blurring (in mm)           = 10
+Target resolution (in mm)         = 2 2 2
+Source blurring (in mm)           = 10
+Source resolution (in mm)         = 2 2 2
+No. of iterations                 = 20
+No. of steps                      = 4
+Length of steps                   = 4
+Delta                             = 0
+
+#
+# Registration parameters for resolution level 3
+#
+
+Resolution level                  = 3
+Target blurring (in mm)           = 20
+Target resolution (in mm)         = 4 4 4
+Source blurring (in mm)           = 20
+Source resolution (in mm)         = 4 4 4
+No. of iterations                 = 20
+No. of steps                      = 4
+Length of steps                   = 8
+Delta                             = 0

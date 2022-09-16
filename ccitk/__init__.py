@@ -23,7 +23,8 @@ __all__ = image.__all__
 if __mirtk_installed__ and __vtk_installed__:
     from . import register
     from . import refine
-    __all__ += ["register", "refine"]
+    from . import motion
+    __all__ += ["register", "refine", "motion"]
 
 if __torch_installed__ and __mirtk_installed__:
     from . import segment

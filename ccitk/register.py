@@ -1,3 +1,16 @@
+__all__ = [
+    "register_landmarks",
+    "register_points",
+    "register_points_ICP",
+    "register_cardiac_phases",
+    "register_labels_affine",
+
+    "transform_phase_mesh",
+    "transform_mesh_using_landmarks",
+    "transform_mesh_rigid",
+    "transform_mesh_affine",
+    "transform_mesh_ffd"
+]
 import mirtk
 from pathlib import Path
 from typing import Union, List, Dict
@@ -5,7 +18,7 @@ import vtk
 import numpy as np
 
 from ccitk.image import set_affine
-from ccitk.core.common.resource import PhaseMesh
+from ccitk.resource import PhaseMesh
 
 """
     Points
@@ -207,6 +220,7 @@ def register_labels_affine(
     Cardiac
 """
 
+
 def transform_phase_mesh(
         mesh: PhaseMesh, output_mesh: Union[PhaseMesh, Path], dofin: Union[Path, Dict],
         overwrite: bool = False, invert: bool = False,
@@ -265,7 +279,7 @@ def transform_phase_mesh(
 
 
 def transform_mesh_using_landmarks(
-        moving_mesh: PhaseMesh, fixed_landmarks: Path, moving_landmarks: Path, output_dir: Path,
+        moving_mesh: Union[PhaseMesh, Path], fixed_landmarks: Path, moving_landmarks: Path, output_dir: Path,
         mirtk: bool = False, overwrite: bool = False,
 ):
     dofout = output_dir.joinpath("landmarks.dof.gz")
@@ -279,137 +293,198 @@ def transform_mesh_using_landmarks(
             overwrite=overwrite,
         )
     output_dir.mkdir(exist_ok=True, parents=True)
-    moving_mesh = transform_phase_mesh(
-        mesh=moving_mesh,
-        output_mesh=output_dir.joinpath("mesh"),
-        dofin=dofout,
-        overwrite=overwrite,
-    )
+    if isinstance(moving_mesh, PhaseMesh):
+        moving_mesh = transform_phase_mesh(
+            mesh=moving_mesh,
+            output_mesh=output_dir.joinpath("mesh"),
+            dofin=dofout,
+            overwrite=overwrite,
+        )
+    else:
+        if not output_dir.joinpath(moving_mesh.name).exists() or overwrite:
+            mirtk.transform_points(
+                str(moving_mesh),
+                str(output_dir.joinpath(moving_mesh.name)),
+                dofin=str(dofout),
+            )
+            moving_mesh = output_dir.joinpath(moving_mesh.name)
     return moving_mesh, dofout
 
 
 def transform_mesh_rigid(
-        fixed_mesh: PhaseMesh, moving_mesh: PhaseMesh, output_dir: Path, dofin: Path = None, symmetric: bool = True,
-        overwrite: bool = False,
+        fixed_mesh: Union[PhaseMesh, Path], moving_mesh: Union[PhaseMesh, Path], output_dir: Path,
+        dofin: Path = None, symmetric: bool = True, overwrite: bool = False,
 ):
-    phase = moving_mesh.phase
+    assert all(isinstance(fixed_mesh, PhaseMesh), isinstance(moving_mesh, PhaseMesh)) or \
+           all(isinstance(fixed_mesh, Path), isinstance(moving_mesh, Path))
+    if isinstance(fixed_mesh, PhaseMesh):
+        phase = moving_mesh.phase
+        rigid_dof = register_points_ICP(
+            fixed=[fixed_mesh.rv.rv, fixed_mesh.lv.endocardium, fixed_mesh.lv.epicardium],
+            moving=[moving_mesh.rv.rv, moving_mesh.lv.endocardium, moving_mesh.lv.epicardium],
+            output_path=output_dir.joinpath(f"rigid_{phase}.dof.gz"),
+            symmetric=symmetric,
+            dofin=dofin,
+            overwrite=overwrite,
+        )
+
+        lv_rigid_dof = register_points_ICP(
+            fixed=[fixed_mesh.lv.endocardium, fixed_mesh.lv.epicardium],
+            moving=[moving_mesh.lv.endocardium, moving_mesh.lv.epicardium],
+            dofin=rigid_dof,
+            output_path=output_dir.joinpath(f"lv_rigid_{phase}.dof.gz"),
+            symmetric=symmetric,
+            overwrite=overwrite,
+        )
+
+        rv_rigid_dof = register_points_ICP(
+            fixed=fixed_mesh.rv.rv,
+            moving=moving_mesh.rv.rv,
+            dofin=rigid_dof,
+            output_path=output_dir.joinpath(f"rv_rigid_{phase}.dof.gz"),
+            symmetric=symmetric,
+            overwrite=overwrite,
+        )
+
+        moving_mesh = transform_phase_mesh(
+            mesh=moving_mesh,
+            output_mesh=output_dir.joinpath("mesh"),
+            dofin={"lv": lv_rigid_dof, "rv": rv_rigid_dof},
+            overwrite=overwrite,
+        )
+        return moving_mesh, {"lv": lv_rigid_dof, "rv": rv_rigid_dof}
     rigid_dof = register_points_ICP(
-        fixed=[fixed_mesh.rv.rv, fixed_mesh.lv.endocardium, fixed_mesh.lv.epicardium],
-        moving=[moving_mesh.rv.rv, moving_mesh.lv.endocardium, moving_mesh.lv.epicardium],
-        output_path=output_dir.joinpath(f"rigid_{phase}.dof.gz"),
+        fixed=fixed_mesh,
+        moving=moving_mesh,
+        output_path=output_dir.joinpath(f"rigid.dof.gz"),
         symmetric=symmetric,
         dofin=dofin,
         overwrite=overwrite,
     )
-
-    lv_rigid_dof = register_points_ICP(
-        fixed=[fixed_mesh.lv.endocardium, fixed_mesh.lv.epicardium],
-        moving=[moving_mesh.lv.endocardium, moving_mesh.lv.epicardium],
-        dofin=rigid_dof,
-        output_path=output_dir.joinpath(f"lv_rigid_{phase}.dof.gz"),
-        symmetric=symmetric,
-        overwrite=overwrite,
-    )
-
-    rv_rigid_dof = register_points_ICP(
-        fixed=fixed_mesh.rv.rv,
-        moving=moving_mesh.rv.rv,
-        dofin=rigid_dof,
-        output_path=output_dir.joinpath(f"rv_rigid_{phase}.dof.gz"),
-        symmetric=symmetric,
-        overwrite=overwrite,
-    )
-
-    moving_mesh = transform_phase_mesh(
-        mesh=moving_mesh,
-        output_mesh=output_dir.joinpath("mesh"),
-        dofin={"lv": lv_rigid_dof, "rv": rv_rigid_dof},
-        overwrite=overwrite,
-    )
-    return moving_mesh, {"lv": lv_rigid_dof, "rv": rv_rigid_dof}
+    if not output_dir.joinpath(moving_mesh.name).exists() or overwrite:
+        mirtk.transform_points(
+            str(moving_mesh),
+            str(output_dir.joinpath(moving_mesh.name)),
+            dofin=str(rigid_dof),
+        )
+    return moving_mesh, rigid_dof
 
 
 def transform_mesh_affine(
-        fixed_mesh: PhaseMesh, moving_mesh: PhaseMesh, parin: Path, output_dir: Path, dofin: Dict = None,
-        overwrite: bool = False,
+        fixed_mesh: Union[PhaseMesh, Path], moving_mesh: Union[PhaseMesh, Path],
+        parin: Path, output_dir: Path, dofin: Union[Dict, Path] = None, overwrite: bool = False,
 ):
-    phase = moving_mesh.phase
-    lv_affine_dof = output_dir.joinpath(f"lv_affine_{phase}.dof.gz")
-    rv_affine_dof = output_dir.joinpath(f"rv_affine_{phase}.dof.gz")
-    lv_dofin = None if dofin is None else dofin["lv"]
-    rv_dofin = None if dofin is None else dofin["rv"]
+    assert all(isinstance(fixed_mesh, PhaseMesh), isinstance(moving_mesh, PhaseMesh)) or \
+           all(isinstance(fixed_mesh, Path), isinstance(moving_mesh, Path))
+    if isinstance(fixed_mesh, PhaseMesh):
+        phase = moving_mesh.phase
+        lv_affine_dof = output_dir.joinpath(f"lv_affine_{phase}.dof.gz")
+        rv_affine_dof = output_dir.joinpath(f"rv_affine_{phase}.dof.gz")
+        if dofin is not None:
+            if isinstance(dofin, dict):
+                lv_dofin = dofin["lv"]
+                rv_dofin = dofin["rv"]
+            else:
+                assert isinstance(dofin, Path)
+                lv_dofin = dofin
+                rv_dofin = dofin
+        else:
+            lv_dofin = None
+            rv_dofin = None
 
-    register_points(
-        fixed=fixed_mesh.lv.epicardium,
-        moving=moving_mesh.lv.epicardium,
-        model="Affine",
-        dofin=lv_dofin,
-        parin=parin,
-        output_path=lv_affine_dof,
-        overwrite=overwrite,
-    )
-    register_points(
-        fixed=fixed_mesh.rv.rv,
-        moving=moving_mesh.rv.rv,
-        model="Affine",
-        dofin=rv_dofin,
-        parin=parin,
-        output_path=rv_affine_dof,
-        overwrite=overwrite,
-    )
+        register_points(
+            fixed=fixed_mesh.lv.epicardium,
+            moving=moving_mesh.lv.epicardium,
+            model="Affine",
+            dofin=lv_dofin,
+            parin=parin,
+            output_path=lv_affine_dof,
+            overwrite=overwrite,
+        )
+        register_points(
+            fixed=fixed_mesh.rv.rv,
+            moving=moving_mesh.rv.rv,
+            model="Affine",
+            dofin=rv_dofin,
+            parin=parin,
+            output_path=rv_affine_dof,
+            overwrite=overwrite,
+        )
 
-    moving_mesh = transform_phase_mesh(
-        mesh=moving_mesh,
-        output_mesh=output_dir.joinpath("mesh"),
-        dofin={"lv": lv_affine_dof, "rv": rv_affine_dof},
+        moving_mesh = transform_phase_mesh(
+            mesh=moving_mesh,
+            output_mesh=output_dir.joinpath("mesh"),
+            dofin={"lv": lv_affine_dof, "rv": rv_affine_dof},
+            overwrite=overwrite,
+        )
+        return moving_mesh, {"lv": lv_affine_dof, "rv": rv_affine_dof}
+    assert isinstance(dofin, Path)
+    moving_mesh = register_points(
+        fixed=fixed_mesh,
+        moving=moving_mesh,
+        model="Affine",
+        dofin=dofin,
+        parin=parin,
+        output_path=output_dir.joinpath(f"lv_affine.dof.gz"),
         overwrite=overwrite,
     )
-    return moving_mesh, {"lv": lv_affine_dof, "rv": rv_affine_dof}
+    return moving_mesh, output_dir.joinpath(f"lv_affine.dof.gz")
 
 
 def transform_mesh_ffd(
-        fixed_mesh: PhaseMesh, fixed_lv_label: Path, fixed_rv_label: Path,
-        moving_mesh: PhaseMesh, moving_lv_label: Path, moving_rv_label: Path,
-        parin: Path, output_dir: Path, dofin: Dict = None, ds: int = 8, overwrite: bool = False,
+        fixed_mesh: PhaseMesh, moving_mesh: PhaseMesh, parin: Path, output_dir: Path,
+        fixed_lv_label: Path = None, fixed_rv_label: Path = None,
+        moving_lv_label: Path = None, moving_rv_label: Path = None,
+        dofin: Dict = None, ds: int = 8, overwrite: bool = False,
 
 ):
+    using_label = all(fixed_lv_label is not None, fixed_rv_label is not None,
+                      moving_rv_label is not None, moving_lv_label is not None)
+    assert all(fixed_lv_label is not None, fixed_rv_label is not None,
+               moving_rv_label is not None, moving_lv_label is not None) or \
+           all(fixed_lv_label is None, fixed_rv_label is None,
+               moving_rv_label is None, moving_lv_label is None)
     phase = moving_mesh.phase
     lv_dofin = None if dofin is None else dofin["lv"]
     rv_dofin = None if dofin is None else dofin["rv"]
     lv_ffd_dof = output_dir.joinpath(f"lv_ffd_{phase}.dof.gz")
     rv_ffd_dof = output_dir.joinpath(f"rv_ffd_{phase}.dof.gz")
     if not rv_ffd_dof.exists() or overwrite:
-        mirtk.register(
-            str(moving_rv_label),  # target
-            str(fixed_rv_label),  # source,
-            model="FFD",
-            dofin=str(rv_dofin),
-            dofout=str(rv_ffd_dof),
-            parin=str(parin),
-        )
+        if using_label:
+            mirtk.register(
+                str(moving_rv_label),  # target
+                str(fixed_rv_label),  # source,
+                model="FFD",
+                dofin=str(rv_dofin),
+                dofout=str(rv_ffd_dof),
+                parin=str(parin),
+            )
+            rv_dofin = rv_ffd_dof
         rv_ffd_dof = register_points(
             fixed=fixed_mesh.rv.rv,
             moving=moving_mesh.rv.rv,
             ds=ds,
             model="FFD",
-            dofin=rv_ffd_dof,
+            dofin=rv_dofin,
             output_path=rv_ffd_dof,
         )
     if not lv_ffd_dof.exists() or overwrite:
-        mirtk.register(
-            str(moving_lv_label),  # target
-            str(fixed_lv_label),  # source,
-            model="FFD",
-            dofin=str(lv_dofin),
-            dofout=str(lv_ffd_dof),
-            parin=str(parin),
-        )
+        if using_label:
+            mirtk.register(
+                str(moving_lv_label),  # target
+                str(fixed_lv_label),  # source,
+                model="FFD",
+                dofin=str(lv_dofin),
+                dofout=str(lv_ffd_dof),
+                parin=str(parin),
+            )
+            lv_dofin = lv_ffd_dof
         lv_ffd_dof = register_points(
             fixed=[fixed_mesh.lv.endocardium, fixed_mesh.lv.epicardium],
             moving=[moving_mesh.lv.endocardium, moving_mesh.lv.epicardium],
             ds=ds//2,
             model="FFD",
-            dofin=lv_ffd_dof,
+            dofin=lv_dofin,
             output_path=lv_ffd_dof,
         )
     output_mesh = transform_phase_mesh(
@@ -422,9 +497,11 @@ def transform_mesh_ffd(
 
 
 def register_cardiac_phases(
-        fixed_mesh: PhaseMesh,  fixed_landmarks: Path, fixed_lv_label: Path, fixed_rv_label: Path,
-        moving_mesh: PhaseMesh, moving_landmarks: Path, moving_lv_label: Path, moving_rv_label: Path,
+        fixed_mesh: PhaseMesh,  fixed_landmarks: Path,
+        moving_mesh: PhaseMesh, moving_landmarks: Path,
         affine_parin: Path, ffd_parin: Path, output_dir: Path,
+        fixed_lv_label: Path = None, fixed_rv_label: Path = None,
+        moving_lv_label: Path = None, moving_rv_label: Path = None,
         ds: int = 8, rigid: bool = False, overwrite: bool = False,
 ):
     phase = moving_mesh.phase
