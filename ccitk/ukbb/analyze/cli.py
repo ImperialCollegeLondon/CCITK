@@ -13,6 +13,7 @@ def parse_args():
     parser.add_argument("--data-dir", type=str, required=True)
     parser.add_argument("--output-dir", type=str, required=True)
     parser.add_argument("--pressure-csv", type=str, default=None)
+    parser.add_argument("--overwrite", action="store_true")
     return parser.parse_args()
 
 
@@ -21,19 +22,47 @@ def main():
     data_dir = Path(args.data_dir).absolute()
     output_dir = Path(args.output_dir).absolute()
     par_dir = Path(__file__).parent.joinpath("par").absolute()
+    overwrite = args.overwrite
     if args.sa:
-        eval_ventricular_volume(data_dir=str(data_dir), output_csv=str(output_dir.joinpath("sa_ventricular_volume.csv")))
-        eval_wall_thickness(data_dir=str(data_dir), output_csv=str(output_dir.joinpath("sa_wall_thickness.csv")))
-        eval_strain_sax(data_dir=str(data_dir), output_csv=str(output_dir.joinpath("sa_strain.csv")), par_dir=str(par_dir))
+        if not output_dir.joinpath("sa_ventricular_volume.csv").exists() or overwrite:
+            eval_ventricular_volume(
+                data_dir=str(data_dir),
+                output_csv=str(output_dir.joinpath("sa_ventricular_volume.csv")),
+            )
+        if not output_dir.joinpath("sa_wall_thickness.csv").exists() or overwrite:
+            eval_wall_thickness(
+                data_dir=str(data_dir),
+                output_csv=str(output_dir.joinpath("sa_wall_thickness.csv")),
+            )
+        if not output_dir.joinpath("sa_strain.csv").exists() or overwrite:
+            eval_strain_sax(
+                data_dir=str(data_dir),
+                output_csv=str(output_dir.joinpath("sa_strain.csv")),
+                par_dir=str(par_dir),
+            )
 
     if args.la:
-        eval_atrial_volume(data_dir=str(data_dir), output_csv=str(output_dir.joinpath("la_atrial_volume.csv")))
-        eval_strain_lax(data_dir=str(data_dir), output_csv=str(output_dir.joinpath("la_strain.csv")), par_dir=str(par_dir))
+        if not output_dir.joinpath("la_atrial_volume.csv").exists() or overwrite:
+            eval_atrial_volume(
+                data_dir=str(data_dir),
+                output_csv=str(output_dir.joinpath("la_atrial_volume.csv")),
+            )
+        if not output_dir.joinpath("la_strain.csv").exists() or overwrite:
+            eval_strain_lax(
+                data_dir=str(data_dir),
+                output_csv=str(output_dir.joinpath("la_strain.csv")),
+                par_dir=str(par_dir),
+            )
 
     if args.ao:
         assert args.pressure_csv is not None
         pressure_csv = Path(args.pressure_csv).absolute()
-        eval_aortic_area(data_dir=str(data_dir), pressure_csv=str(pressure_csv), output_csv=str(output_dir.joinpath("aortic_area.csv")))
+        if not output_dir.joinpath("aortic_area.csv").exists() or overwrite:
+            eval_aortic_area(
+                data_dir=str(data_dir),
+                pressure_csv=str(pressure_csv),
+                output_csv=str(output_dir.joinpath("aortic_area.csv")),
+            )
 
 
 if __name__ == '__main__':
