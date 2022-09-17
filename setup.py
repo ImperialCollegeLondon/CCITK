@@ -14,18 +14,19 @@ setup(
     include_package_data=True,
     entry_points={
         "console_scripts": [
-            "ccitk-ukbb-download = ccitk.core.ukbb.download.cli:main",
-            "ccitk-ukbb-convert = ccitk.core.ukbb.convert.cli:main",
-            "ccitk-ukbb-segment = ccitk.core.ukbb.segment.cli:main",
-            "ccitk-ukbb-analyze = ccitk.core.ukbb.analyze.cli:main",
+            "ccitk-ukbb-download = ccitk.ukbb.download.cli:main",
+            "ccitk-ukbb-convert = ccitk.ukbb.convert.cli:main",
+            "ccitk-ukbb-segment = ccitk.ukbb.segment.cli:main",
+            "ccitk-ukbb-analyze = ccitk.ukbb.analyze.cli:main",
+            "ccitk-cmr-segment = ccitk.cmr_segment.cli:main",
         ]
     },
-    install_requires=[
-        "numpy",
-        "nibabel",
-        "vtk",
-        "SimpleITK",
-        "pydicom",
-
-    ],
+    # install_requires=[
+    #     "numpy",
+    #     "nibabel",
+    #     "vtk",
+    #     "SimpleITK",
+    #     "pydicom",
+    #
+    # ],
 )
