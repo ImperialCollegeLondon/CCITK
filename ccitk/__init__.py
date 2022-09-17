@@ -7,7 +7,7 @@ except ModuleNotFoundError:
 try:
     import torch
     __torch_installed__ = True
-except ModuleNotFoundError:
+except:
     __torch_installed__ = False
 
 try:
@@ -26,9 +26,12 @@ if __mirtk_installed__ and __vtk_installed__:
     from . import motion
     __all__ += ["register", "refine", "motion"]
 
-if __torch_installed__ and __mirtk_installed__:
-    from . import segment
-    __all__ += ["segment"]
+if __torch_installed__:
+    from . import nn
+    __all__ += ["nn"]
+    if __mirtk_installed__:
+            from . import segment
+            __all__ += ["segment"]
 
 if __vtk_installed__:
     from . import landmark
