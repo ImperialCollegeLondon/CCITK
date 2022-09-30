@@ -1,6 +1,6 @@
 from pathlib import Path
 from typing import Union
-from ccitk.resource import CineImages, PhaseImage
+from ccitk.common.resource import CineImages, PhaseImage
 from ccitk.cmr_segment.common.constants import DEFAULT_MODEL_PATH
 
 from ccitk.cmr_segment.segmentor.torch import TorchSegmentor

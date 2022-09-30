@@ -6,11 +6,14 @@ __all__ = [
     "mesh_motion",
     "phase_mesh_motion",
 ]
+
+import shutil
+
 import mirtk
 from pathlib import Path
 from typing import List
 from tqdm import tqdm
-from ccitk.resource import PhaseMesh
+from ccitk.common.resource import CardiacMesh
 
 
 def warp_label(reference_label: Path, output_path: Path, dofin: Path, invert: bool = False):
@@ -34,7 +37,7 @@ def forward_motion(images: List[Path], output_dir: Path, parin: Path, compose_sp
             list of motion, ordering from 00 to 01, to 00 to N, where N is the number of the last frame.
     """
     assert output_dir.is_dir()
-    dofs = []
+    forward_dofs = []
     for fr in tqdm(range(1, len(images))):
 
         target = images[fr - 1]
@@ -47,14 +50,14 @@ def forward_motion(images: List[Path], output_dir: Path, parin: Path, compose_sp
                 parin=str(parin),
                 dofout=str(dof_output)
             )
-        dofs.append(dof_output)
+        forward_dofs.append(dof_output)
 
     # Compose inter-frame transformation fields #
     print("\n ...  Compose forward inter-frame transformation fields")
-    forward_compose_dofs = [dofs[0]]
+    forward_compose_dofs = [forward_dofs[0]]
     for fr in tqdm(range(2, len(images))):
         dof_out = output_dir.joinpath("ffd_comp_forward_00_to_{:02d}.dof.gz".format(fr))
-        dofs = [str(dofs[k]) for k in range(0, fr)]
+        dofs = [str(forward_dofs[k]) for k in range(0, fr)]
 
         if not dof_out.exists() or overwrite:
             mirtk.compose_dofs(
@@ -140,59 +143,62 @@ def mesh_motion(reference_mesh: Path, motion_dofs: List[Path], output_dir: Path,
                 file_prefix: str = "fr", overwrite: bool = False) -> List[Path]:
     output_dir.mkdir(parents=True, exist_ok=True)
     vtks = [reference_mesh]
+    vtk = output_dir.joinpath("{}{:02d}.vtk".format(file_prefix, 0))
+    if not vtk.exists() or overwrite:
+        shutil.copy(str(reference_mesh), str(vtk))
     for fr in tqdm(range(1, len(motion_dofs) + 1)):
         vtk = output_dir.joinpath("{}{:02d}.vtk".format(file_prefix, fr))
         if not vtk.exists() or overwrite:
             mirtk.transform_points(
                 str(reference_mesh),
                 str(vtk),
-                dofin=str(motion_dofs[fr]),
+                dofin=str(motion_dofs[fr - 1]),
             )
         vtks.append(vtk)
     return vtks
 
 
 def phase_mesh_motion(
-        reference_mesh: PhaseMesh, motion_dofs: List[Path], output_dir: Path,
+        reference_mesh: CardiacMesh, motion_dofs: List[Path], output_dir: Path,
         file_prefix: str = "fr", overwrite: bool = False
 ):
     lv_endo_vtks = mesh_motion(
-        reference_mesh=reference_mesh.lv.endocardium.path,
+        reference_mesh=reference_mesh.lv.endocardium,
         motion_dofs=motion_dofs,
         output_dir=output_dir.joinpath("LV_endo"),
         file_prefix=file_prefix,
         overwrite=overwrite,
     )
     lv_epi_vtks = mesh_motion(
-        reference_mesh=reference_mesh.lv.epicardium.path,
+        reference_mesh=reference_mesh.lv.epicardium,
         motion_dofs=motion_dofs,
         output_dir=output_dir.joinpath("LV_epi"),
         file_prefix=file_prefix,
         overwrite=overwrite,
     )
     lv_myo_vtks = mesh_motion(
-        reference_mesh=reference_mesh.lv.myocardium.path,
+        reference_mesh=reference_mesh.lv.myocardium,
         motion_dofs=motion_dofs,
         output_dir=output_dir.joinpath("LV_myo"),
         file_prefix=file_prefix,
         overwrite=overwrite,
     )
     rv_vtks = mesh_motion(
-        reference_mesh=reference_mesh.rv.rv.path,
+        reference_mesh=reference_mesh.rv.rv,
         motion_dofs=motion_dofs,
         output_dir=output_dir.joinpath("RV"),
         file_prefix=file_prefix,
         overwrite=overwrite,
     )
-    rv_epi_vtks = mesh_motion(
-        reference_mesh=reference_mesh.rv.epicardium.path,
-        motion_dofs=motion_dofs,
-        output_dir=output_dir.joinpath("RV_epi"),
-        file_prefix=file_prefix,
-        overwrite=overwrite,
-    )
+    # rv_epi_vtks = mesh_motion(
+    #     reference_mesh=reference_mesh.rv.epicardium,
+    #     motion_dofs=motion_dofs,
+    #     output_dir=output_dir.joinpath("RV_epi"),
+    #     file_prefix=file_prefix,
+    #     overwrite=overwrite,
+    # )
 
     return {
         "lv": {"endo": lv_endo_vtks, "epi": lv_epi_vtks, "myo": lv_myo_vtks},
-        "rv": {"rv": rv_vtks, "epi": rv_epi_vtks},
+        "rv": {"rv": rv_vtks},
     }

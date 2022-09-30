@@ -49,12 +49,18 @@ def read_nii_label(label_path: Path, labels: List[int], affine: bool = True) -> 
         return label
 
 
-def rescale_intensity(image, thres=(1.0, 99.0)):
+def rescale_intensity(image, thres: List[float] = None):
     """ Rescale the image intensity to the range of [0, 1] """
-    val_l, val_h = np.percentile(image, thres)
-    image2 = image
-    image2[image < val_l] = val_l
-    image2[image > val_h] = val_h
+    if thres is not None:
+        val_l, val_h = np.percentile(image, thres)
+        image2 = image
+        image2[image < val_l] = val_l
+        image2[image > val_h] = val_h
+    else:
+        val_h = np.max(image)
+        val_l = np.min(image)
+        image2 = image
+
     image2 = (image2.astype(np.float32) - val_l) / (val_h - val_l)
     return image2
 

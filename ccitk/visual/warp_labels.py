@@ -25,12 +25,14 @@ def visualize_warped_labels_motion(image_frames_dir: Path, seg_phases_dir: Path,
     for idx, seg_path, image_path in zip(range(len(seg_phases) - 1), seg_phases, image_frames[1:]):
         image_3d, __ = read_nii_image(image_path)
         seg_3d, __ = read_nii_label(seg_path, labels=[1, 2, 3])
-        image_3d = rescale_intensity(image_3d, (0, 255))
+        image_3d = rescale_intensity(image_3d)
         image_3d_rgb = np.stack([image_3d, image_3d, image_3d], axis=3)
-        seg_3d_rgb = np.zeros((seg_3d.shape[0], seg_3d.shape[1], seg_3d.shape[2], 3))
-        seg_3d_rgb[seg_3d == 1] = [255, 0, 0]
-        seg_3d_rgb[seg_3d == 2] = [0, 255, 0]
-        seg_3d_rgb[seg_3d == 3] = [0, 0, 255]
+        seg_3d_rgb = np.zeros((seg_3d.shape[1], seg_3d.shape[2], seg_3d.shape[3], 3))
+        print(seg_3d.shape)
+        seg_3d_rgb[seg_3d[0] == 1] = [255, 0, 0]
+        seg_3d_rgb[seg_3d[1] == 1] = [0, 255, 0]
+        seg_3d_rgb[seg_3d[2] == 1] = [0, 0, 255]
+        print(image_3d_rgb.shape, image_3d.shape)
         for slice_num in slice_numbers:
             image = image_3d_rgb[:, :, slice_num, :]
             seg = seg_3d_rgb[:, :, slice_num, :]

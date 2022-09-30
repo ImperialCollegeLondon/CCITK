@@ -1,6 +1,6 @@
 from pathlib import Path
 from argparse import ArgumentParser
-from ccitk.resource import PhaseImage
+from ccitk.common.resource import PhaseImage
 from ccitk.cmr_segment.segmentor.tf1.HR import TF13DSegmentor
 
 

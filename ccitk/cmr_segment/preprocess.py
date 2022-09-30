@@ -3,9 +3,11 @@ import mirtk
 import shutil
 
 import subprocess
+import numpy as np
+import nibabel as nib
 from pathlib import Path
 from typing import Iterable, Tuple
-from ccitk.resource import NiiData, CineImages, PhaseImage, Phase
+from ccitk.common.resource import NiiData, CineImages, PhaseImage, Phase
 
 
 class DataPreprocessor:
@@ -30,6 +32,16 @@ class DataPreprocessor:
             es_image = PhaseImage.from_dir(subject_output_dir, phase=Phase.ES)
             print("ED ES image:\n\t{}\n\t{}".format(repr(ed_image), repr(es_image)))
             contrasted_nii_path = subject_output_dir.joinpath("contrasted_{}".format(nii_data.name))
+
+            # Flip nii data
+            nim = nib.load(str(nii_data))
+            image = nim.get_data()
+            image = np.flip(image, axis=1)
+
+            nim2 = nib.Nifti1Image(image, nim.affine)
+            nim2.header['pixdim'] = nim.header['pixdim']
+            nib.save(nim2, str(subject_output_dir.joinpath("LVSA_flipped.nii.gz")))
+            nii_data = subject_output_dir.joinpath("LVSA_flipped.nii.gz")
             if not ed_image.exists() or not es_image.exists() or not contrasted_nii_path.exists():
                 print(' Detecting ED/ES phases {}...'.format(str(nii_data)))
                 if not use_irtk:

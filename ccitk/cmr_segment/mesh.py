@@ -1,7 +1,7 @@
 import shutil
 from pathlib import Path
 
-from ccitk.resource import Segmentation, PhaseMesh
+from ccitk.common.resource import Segmentation, CardiacMesh
 from ccitk.mesh import extract_mesh_from_segmentation
 
 
@@ -11,22 +11,22 @@ class MeshExtractor:
         self.blur = blur
         self.overwrite = overwrite
 
-    def run(self, segmentation: Segmentation, output_dir: Path) -> PhaseMesh:
+    def run(self, segmentation: Segmentation, output_dir: Path) -> CardiacMesh:
         temp_dir = output_dir.joinpath("temp")
         if self.overwrite:
             if temp_dir.exists():
                 shutil.rmtree(str(temp_dir), ignore_errors=True)
             if output_dir.exists():
                 shutil.rmtree(str(output_dir), ignore_errors=True)
-        mesh = PhaseMesh.from_dir(dir=output_dir, phase=segmentation.phase)
+        mesh = CardiacMesh.from_dir(dir=output_dir, phase=segmentation.phase)
         if not mesh.exists() or self.overwrite:
-            self.rv(segmentation, mesh.rv.rv.path)
-            self.rv_epi(segmentation, mesh.rv.epicardium.path)
-            self.lv_endo(segmentation, mesh.lv.endocardium.path)
-            self.lv_epi(segmentation, mesh.lv.epicardium.path)
-            self.lv_myo(segmentation, mesh.lv.myocardium.path)
-        if temp_dir.exists():
-            shutil.rmtree(str(temp_dir), ignore_errors=True)
+            self.rv(segmentation, mesh.rv.rv)
+            self.rv_epi(segmentation, mesh.rv.epicardium)
+            self.lv_endo(segmentation, mesh.lv.endocardium)
+            self.lv_epi(segmentation, mesh.lv.epicardium)
+            self.lv_myo(segmentation, mesh.lv.myocardium)
+        # if temp_dir.exists():
+        #     shutil.rmtree(str(temp_dir), ignore_errors=True)
         mesh.check_valid()
         return mesh
 

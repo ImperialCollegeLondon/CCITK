@@ -1,7 +1,7 @@
 import dataclasses
 from pathlib import Path
 from pyhocon import ConfigTree, ConfigFactory
-from ccitk.core.common.constants import RESOURCE_DIR, ROOT_DIR
+from ccitk.cmr_segment.common.constants import RESOURCE_DIR, ROOT_DIR
 from tempfile import gettempdir
 from datetime import datetime
 from typing import List, Tuple

@@ -8,12 +8,15 @@ from ccitk.cmr_segment.segmentor import Segmentor
 from ccitk.cmr_segment.segmentor.utils import refined_mask
 from ccitk.cmr_segment.nn.torch.data import rescale_intensity
 from ccitk.cmr_segment.nn.torch import prepare_tensors
+from ccitk.cmr_segment.segmentor.torch.network import UNet
 
 
 class TorchSegmentor(Segmentor):
     def __init__(self, model_path: Path, overwrite: bool = False, resize_size: Tuple = None, device: int = 0):
         super().__init__(model_path, overwrite)
-        self.model = torch.load(str(model_path)).cuda(device)
+        self.model = UNet(1, 3, 8).cuda(device)
+        self.model.load_state_dict(torch.load(str(model_path)))
+        # self.model = torch.load(str(model_path)).cuda(device)
         self.model.eval()
         if resize_size is None:
             resize_size = (128, 128, 64)

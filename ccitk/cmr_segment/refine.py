@@ -3,8 +3,8 @@ import numpy as np
 from pathlib import Path
 
 from ccitk.cmr_segment.common.constants import RESOURCE_DIR
-from ccitk.resource import Segmentation, PhaseImage
-from ccitk.data_table import DataTable
+from ccitk.common.resource import Segmentation, PhaseImage
+from ccitk.common.data_table import DataTable
 from ccitk.refine import refine_segmentation_with_atlases
 
 

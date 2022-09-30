@@ -1,6 +1,6 @@
 import os
 from pathlib import Path
-from ccitk.core.common.config import DatasetConfig, DataConfig, AugmentationConfig
+from ccitk.cmr_segment.common.config import DatasetConfig, DataConfig, AugmentationConfig
 import random
 from torch.utils.data.dataset import Dataset
 from torch.utils.data.sampler import SequentialSampler, RandomSampler
@@ -11,9 +11,9 @@ import numpy as np
 import SimpleITK as sitk
 import torch
 from typing import List, Tuple
-from ccitk.core.common.data_table import DataTable
+from ccitk.common.data_table import DataTable
 from scipy.ndimage import zoom
-from ccitk.core.nn.torch.augmentation import augment, random_crop, central_crop_with_padding
+from ccitk.cmr_segment.nn.torch.augmentation import augment, random_crop, central_crop_with_padding
 from tqdm import tqdm
 
 

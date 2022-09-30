@@ -1,5 +1,5 @@
 import math
-from ccitk.core.common.config import AugmentationConfig
+from ccitk.cmr_segment.common.config import AugmentationConfig
 import numpy as np
 from typing import Tuple
 from scipy.ndimage import zoom, rotate

@@ -7,7 +7,7 @@ from ccitk.cmr_segment.mesh import MeshExtractor
 
 from ccitk.landmark import extract_simple_landmarks
 from ccitk.cmr_segment.config import PipelineConfig
-from ccitk.resource import Segmentation, PhaseMesh, Phase
+from ccitk.common.resource import Segmentation, CardiacMesh, Phase
 from ccitk.cmr_segment.motion import MotionTracker
 from ccitk.cmr_segment.refine import SegmentationRefiner
 from ccitk.image import set_affine
@@ -117,7 +117,7 @@ class CMRPipeline:
                             # landmark_path = extract_landmarks(
                             #     segmentation.path, output_path=landmark_path, labels=[2, 3]
                             # )
-                            landmarks = extract_simple_landmarks(
+                            landmark_path = extract_simple_landmarks(
                                 segmentation.path, output_path=landmark_path,
                             )
 
@@ -139,7 +139,7 @@ class CMRPipeline:
                             # landmark_path = extract_landmarks(
                             #     segmentation.path, output_path=landmark_path, labels=[2, 3]
                             # )
-                            landmarks = extract_simple_landmarks(
+                            landmark_path = extract_simple_landmarks(
                                 segmentation.path, output_path=landmark_path,
                             )
                         except ValueError:
@@ -147,7 +147,7 @@ class CMRPipeline:
                 if self.config.extract:
                     mesh = mesh_extractor.run(segmentation, output_dir.joinpath("mesh"))
                 else:
-                    mesh = PhaseMesh.from_dir(output_dir.joinpath("mesh"), phase=phase_image.phase)
+                    mesh = CardiacMesh.from_dir(output_dir.joinpath("mesh"), phase=phase_image.phase)
 
                 segmentations.append(segmentation)
                 meshes.append(mesh)
@@ -164,7 +164,7 @@ class CMRPipeline:
                 motion_tracker.run(
                     cine=enlarged_cine,
                     ed_segmentation=segmentations[0],
-                    landmarks=landmarks,
+                    landmarks=landmark_path,
                     ED_mesh=meshes[0],
                     output_dir=output_dir.joinpath("motion"),
                     overwrite=self.config.overwrite,

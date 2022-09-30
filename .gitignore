@@ -4,3 +4,8 @@
 __pycache__/
 *.vtk
 *.gz
+output/
+*.png
+*.gif
+temp/
+tmp/

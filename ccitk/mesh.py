@@ -121,8 +121,9 @@ def extract_mesh_from_segmentation(
             if len(labels) > 0:
                 temp_dir = output_path.parent.joinpath("temp")
                 temp_dir.mkdir(exist_ok=True, parents=True)
-                output = temp_dir.joinpath(f"{segmentation.stem}_{phase}.nii.gz") \
-                    if phase is not None else temp_dir.joinpath(f"{segmentation.stem}.nii.gz")
+                suffix = "_".join([str(l) for l in labels])
+                output = temp_dir.joinpath(f"{segmentation.stem}_{phase}_{suffix}.nii.gz") \
+                    if phase is not None else temp_dir.joinpath(f"{segmentation.stem}_{suffix}.nii.gz")
                 mirtk.calculate_element_wise(
                     str(segmentation),
                     "-label", *labels, set=255, pad=0,
@@ -133,7 +134,7 @@ def extract_mesh_from_segmentation(
                     str(output_path),
                     isovalue=iso_value, blur=blur,
                 )
-                shutil.rmtree(str(temp_dir))
+                # shutil.rmtree(str(temp_dir))
                 return output_path
         mirtk.extract_surface(
             str(segmentation),

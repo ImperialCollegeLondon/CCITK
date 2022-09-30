@@ -4,7 +4,7 @@ import nibabel as nib
 from pathlib import Path
 from typing import List, Tuple
 
-from ccitk.resource import PhaseImage, Segmentation, CineImages
+from ccitk.common.resource import PhaseImage, Segmentation, CineImages
 
 
 class Segmentor:

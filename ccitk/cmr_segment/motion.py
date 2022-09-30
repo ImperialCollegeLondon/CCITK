@@ -3,8 +3,7 @@ import shutil
 import numpy as np
 from tqdm import tqdm
 from typing import List
-from pathlib import Path
-from ccitk.resource import CineImages, Template, Phase, PhaseMesh, MeshResource, Segmentation
+from ccitk.common.resource import CineImages, CardiacMesh, Path, Segmentation
 from ccitk.motion import warp_label, forward_motion, backward_motion, average_forward_backward_motion, phase_mesh_motion
 from ccitk.register import register_cardiac_phases
 
@@ -70,10 +69,15 @@ class MotionTracker:
             ffd_motion_cfg = self.param_dir.joinpath("ffd_motion_2.cfg")
         self.ffd_motion_cfg = ffd_motion_cfg
         self.ffd_refine_cfg = self.param_dir.joinpath("ffd_refine.cfg")
-        self.template = Template(dir=template_dir)
+        self.template_dir = template_dir
+        self.template_landmarks = self.template_dir.joinpath("landmarks2_old.vtk")
+        # self.template = Template(dir=template_dir)
 
-    def run(self, cine: CineImages, ed_segmentation: Segmentation, landmarks: Path, ED_mesh: PhaseMesh,
+    def run(self, cine: CineImages, ed_segmentation: Segmentation, landmarks: Path, ED_mesh: CardiacMesh,
             output_dir: Path, overwrite: bool = False):
+
+        template_ED_mesh = CardiacMesh.from_dir(self.template_dir, "ED")
+
         output_dir.mkdir(parents=True, exist_ok=True)
         dof_dir = output_dir.joinpath("dof")
         dof_dir.mkdir(parents=True, exist_ok=True)
@@ -107,17 +111,15 @@ class MotionTracker:
                 warp_label(
                     reference_label=ed_segmentation.path,
                     output_path=output_dir.joinpath("seg").joinpath(f"lvsa_{fr:02d}.nii.gz"),
-                    dofin=combine_dofs[fr],
+                    dofin=combine_dofs[fr - 1],
                     invert=True
                 )
 
         transformed_atlas_mesh, ffd_out = register_cardiac_phases(
             fixed_mesh=ED_mesh,
-            fixed_landmarks=landmarks.path,
-            moving_mesh=self.template,
-            moving_landmarks=self.template.landmark,
-            affine_parin=self.affine_parin,
-            ffd_parin=self.ffd_parin,
+            fixed_landmarks=landmarks,
+            moving_mesh=template_ED_mesh,
+            moving_landmarks=self.template_landmarks,
             output_dir=output_dir.joinpath("register"),
             ds=20,
             rigid=True,
@@ -133,7 +135,7 @@ class MotionTracker:
         lv_epi_vtks = phase_motion["lv"]["epi"]
         lv_myo_vtks = phase_motion["lv"]["myo"]
         rv_vtks = phase_motion["rv"]["rv"]
-        rv_epi_vtks = phase_motion["rv"]["epi"]
+        # rv_epi_vtks = phase_motion["rv"]["epi"]
 
         txt_dir = output_dir.joinpath("TXT")
 
@@ -161,11 +163,11 @@ class MotionTracker:
             overwrite=overwrite,
         )
 
-        self.convert_vtks_to_txts(
-            vtks=rv_epi_vtks,
-            output_dir=txt_dir.joinpath("RV_epi"),
-            overwrite=overwrite,
-        )
+        # self.convert_vtks_to_txts(
+        #     vtks=rv_epi_vtks,
+        #     output_dir=txt_dir.joinpath("RV_epi"),
+        #     overwrite=overwrite,
+        # )
 
     @staticmethod
     def convert_vtks_to_txts(vtks: List[Path], output_dir: Path, overwrite: bool = False):

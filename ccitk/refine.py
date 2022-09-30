@@ -31,17 +31,19 @@ def select_top_similar_atlases(
     output_dofs = []
     top_atlas_dofs = []
     top_atlas_landmarks = []
+    output_dir.joinpath("nmi").mkdir(parents=True, exist_ok=True)
+    output_dir.joinpath("dof").mkdir(parents=True, exist_ok=True)
+    output_dir.joinpath("atlas").mkdir(parents=True, exist_ok=True)
 
     for i in range(n_atlases):
         affine_dof = output_dir.joinpath("dof", f"shapeaffine_{i}.dof.gz")
-        affine_dof.parent.mkdir(parents=True, exist_ok=True)
         if not affine_dof.exists() or overwrite:
             lm_dof = register_landmarks(
-                fixed=subject_landmarks,
-                moving=atlases_landmark[i],
+                fixed=atlases_landmark[i],
+                moving=subject_landmarks,
                 output_path=output_dir.joinpath("dof", f"shapelandmarks_{i}.dof.gz"),
-                mirtk=False,
-                overwrite=overwrite
+                use_mirtk=False,
+                overwrite=overwrite,
             )
             # Affine registration using landmark as initialisation
             # Split label maps into separate binary masks

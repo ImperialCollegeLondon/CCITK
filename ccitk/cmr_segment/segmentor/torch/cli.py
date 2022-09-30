@@ -4,7 +4,7 @@ from pathlib import Path
 from pyhocon import ConfigFactory
 from argparse import ArgumentParser
 
-from ccitk.resource import PhaseImage
+from ccitk.common.resource import PhaseImage
 from ccitk.cmr_segment.common.config import get_conf
 from ccitk.cmr_segment.segmentor.torch.network import UNet
 from ccitk.cmr_segment.segmentor.torch import TorchSegmentor

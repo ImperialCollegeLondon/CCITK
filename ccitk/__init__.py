@@ -17,6 +17,13 @@ except ModuleNotFoundError:
     __vtk_installed__ = False
 
 
+try:
+    import trimesh
+    __trimesh_installed__ = True
+except ModuleNotFoundError:
+    __trimesh_installed__ = False
+
+
 from .image import *
 __all__ = image.__all__
 

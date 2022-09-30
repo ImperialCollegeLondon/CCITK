@@ -2,7 +2,7 @@ import shutil
 import logging
 from pathlib import Path
 
-from ccitk.resource import PhaseMesh, Segmentation, Template, RVMesh, LVMesh
+from ccitk.common.resource import CardiacMesh, Segmentation
 from ccitk.cmr_segment.common.utils import extract_lv_label, extract_rv_label
 from ccitk.register import register_cardiac_phases
 
@@ -13,8 +13,9 @@ LOGGER = logging.getLogger("CMRSegment.coregister")
 # TODO: multi process
 class Coregister:
     def __init__(self, template_dir: Path, param_dir: Path, overwrite: bool = False):
-        self.template = Template(dir=template_dir)
-        self.template.check_valid()
+        self.template_dir = template_dir
+        self.template_landmarks = self.template_dir.joinpath("landmarks2_old.vtk")
+
         segareg_path = param_dir.joinpath("segareg.txt")
         segreg_path = param_dir.joinpath("segreg.txt")
         spnreg_path = param_dir.joinpath("spnreg.txt")
@@ -31,7 +32,10 @@ class Coregister:
         self.logger = LOGGER
         self.overwrite = overwrite
 
-    def run(self, mesh: PhaseMesh, segmentation: Segmentation, landmark_path: Path, output_dir: Path):
+    def run(self, mesh: CardiacMesh, segmentation: Segmentation, landmark_path: Path, output_dir: Path):
+        template_mesh = CardiacMesh.from_dir(self.template_dir, mesh.phase)
+        template_lv_label = self.template_dir.joinpath(f"LV_{mesh.phase}.nii.gz")
+        template_rv_label = self.template_dir.joinpath(f"RV_{mesh.phase}.nii.gz")
         if not landmark_path.exists():
             raise FileNotFoundError(
                 f"Landmark file does not exist at {landmark_path}. "
@@ -46,6 +50,7 @@ class Coregister:
             self.logger.error(f"Segmentation does not exist at {segmentation.path}. To generate segmenation, "
                               f"please run segmentor first.")
         temp_dir = output_dir.joinpath("temp")
+        temp_dir.mkdir(parents=True, exist_ok=True)
         if self.overwrite:
             if temp_dir.exists():
                 shutil.rmtree(str(temp_dir), ignore_errors=True)
@@ -60,31 +65,17 @@ class Coregister:
             segmentation_path=segmentation.path,
             output_path=temp_dir.joinpath(f"vtk_LV_{segmentation.phase}.nii.gz"),
         )
-        template_mesh = PhaseMesh(
-            rv=RVMesh(
-                mesh=self.template.rv(mesh.phase),
-                epicardium=self.template.rv(mesh.phase),
-            ),
-            lv=LVMesh(
-                endocardium=self.template.lv_endo(mesh.phase),
-                epicardium=self.template.lv_epi(mesh.phase),
-                myocardium=self.template.lv_myo(mesh.phase)
-            ),
-            phase=mesh.phase
-        )
+
         transformed_mesh, dof = register_cardiac_phases(
             fixed_mesh=template_mesh,
-            fixed_landmarks=self.template.landmark,
-            fixed_rv_label=self.template.vtk_rv(mesh.phase),
-            fixed_lv_label=self.template.vtk_lv(mesh.phase),
+            fixed_landmarks=self.template_landmarks,
             moving_mesh=mesh,
             moving_landmarks=landmark_path,
-            moving_rv_label=rv_label,
-            moving_lv_label=lv_label,
             affine_parin=self.segareg_path,
-            ffd_parin=self.spnreg_path,
+            ffd_parin=self.segreg_path,
             output_dir=output_dir,
-            overwrite=self.overwrite
+            overwrite=self.overwrite,
+            ds=8,
         )
         return transformed_mesh
 
