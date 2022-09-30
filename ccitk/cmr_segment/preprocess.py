@@ -12,7 +12,8 @@ from ccitk.common.resource import NiiData, CineImages, PhaseImage, Phase
 
 class DataPreprocessor:
     """Find subjects in data_dir, find ED/ES phases, and split into a sequence of phases"""
-    def run(self, data_dir: Path, output_dir: Path, overwrite: bool = False, use_irtk: bool = True, do_cine: bool = False, do_contrast: bool = True)\
+    def run(self, data_dir: Path, output_dir: Path, overwrite: bool = False, use_irtk: bool = True,
+            do_cine: bool = False, do_contrast: bool = True, preprocess_flip: bool = False)\
             -> Iterable[Tuple[PhaseImage, PhaseImage, CineImages, Path]]:
         do_contrast = True
         for idx, subject_dir in enumerate(sorted(os.listdir(str(data_dir)))):
@@ -34,14 +35,15 @@ class DataPreprocessor:
             contrasted_nii_path = subject_output_dir.joinpath("contrasted_{}".format(nii_data.name))
 
             # Flip nii data
-            nim = nib.load(str(nii_data))
-            image = nim.get_data()
-            image = np.flip(image, axis=1)
+            if preprocess_flip:
+                nim = nib.load(str(nii_data))
+                image = nim.get_data()
+                image = np.flip(image, axis=1)
 
-            nim2 = nib.Nifti1Image(image, nim.affine)
-            nim2.header['pixdim'] = nim.header['pixdim']
-            nib.save(nim2, str(subject_output_dir.joinpath("LVSA_flipped.nii.gz")))
-            nii_data = subject_output_dir.joinpath("LVSA_flipped.nii.gz")
+                nim2 = nib.Nifti1Image(image, nim.affine)
+                nim2.header['pixdim'] = nim.header['pixdim']
+                nib.save(nim2, str(subject_output_dir.joinpath("LVSA_flipped.nii.gz")))
+                nii_data = subject_output_dir.joinpath("LVSA_flipped.nii.gz")
             if not ed_image.exists() or not es_image.exists() or not contrasted_nii_path.exists():
                 print(' Detecting ED/ES phases {}...'.format(str(nii_data)))
                 if not use_irtk:

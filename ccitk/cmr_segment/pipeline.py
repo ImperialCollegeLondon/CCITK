@@ -64,6 +64,7 @@ class CMRPipeline:
             overwrite=self.config.overwrite,
             use_irtk=self.config.use_irtk,
             do_cine=self.config.do_cine,
+            preprocess_flip=self.config.preprocess_flip
         )
         for ed_image, es_image, enlarged_cine, cine, output_dir in subjects:
             if self.config.segment and self.config.do_cine:

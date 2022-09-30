@@ -77,6 +77,7 @@ class PipelineConfig:
         output_dir: Path,
         overwrite: bool = False,
         do_cine: bool = False,
+        preprocess_flip: bool = False,
         model_path: Path = None,
         torch: bool = True,
         device: int = 0,
@@ -94,6 +95,7 @@ class PipelineConfig:
         self.output_dir = output_dir
         self.overwrite = overwrite
         self.do_cine = do_cine
+        self.preprocess_flip = preprocess_flip
         if segment:
             self.segment_config = SegmentorConfig(
                 model_path=model_path,
@@ -151,6 +153,9 @@ class PipelineConfig:
         parser.add_argument("--overwrite", dest="overwrite", action="store_true")
         parser.add_argument("--irtk", dest="use_irtk", action="store_true")
         parser.add_argument("--do-cine", action="store_true", help="Preprocess and segment cine")
+        parser.add_argument(
+            "--preprocess-flip", action="store_true", help="Flip the image in axis 1 in preprocessing step."
+        )
 
         parser.add_argument(
             "--segment", dest="segment", action="store_true",
@@ -209,6 +214,7 @@ class PipelineConfig:
             output_dir=Path(args.output_dir),
             overwrite=args.overwrite,
             do_cine=args.do_cine,
+            preprocess_flip=args.preprocess_flip,
             model_path=Path(args.model_path) if args.model_path is not None else None,
             torch=args.torch,
             device=args.device,
