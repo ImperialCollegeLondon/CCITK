@@ -9,3 +9,6 @@ output/
 *.gif
 temp/
 tmp/
+_build/
+_static/
+_templates/

@@ -12,14 +12,22 @@ __all__ = [
 ]
 
 import numpy as np
-from pathlib import Path
 import nibabel as nib
+from pathlib import Path
 from scipy.ndimage import zoom
 from typing import Tuple, List, Union
 
 
 def read_nii_image(path: Path, affine: bool = True) -> Union[Tuple[np.ndarray, np.ndarray], np.ndarray]:
-    """Read image from nii.gz file and return image and affine matrix (4*4)"""
+    """ Read image from a .nii.gz file
+
+    Args:
+        path: Path, path of the .nii.gz file
+        affine: bool, whether or not to return an affine matrix
+
+    Returns:
+        Image (numpy array) (and affine matrix (4*4) if affine is True)
+    """
     nim = nib.load(str(path))
     image = nim.get_data()
     if image.ndim == 4:
@@ -31,8 +39,19 @@ def read_nii_image(path: Path, affine: bool = True) -> Union[Tuple[np.ndarray, n
         return image
 
 
-def read_nii_label(label_path: Path, labels: List[int], affine: bool = True) -> Union[np.ndarray, Tuple[np.ndarray, np.ndarray]]:
-    """Return (n_label, x, y, z)"""
+def read_nii_label(label_path: Path, labels: List[int], affine: bool = True) \
+        -> Union[np.ndarray, Tuple[np.ndarray, np.ndarray]]:
+    """ ead label from a .nii.gz file
+
+    Args:
+        label_path: path to a .nii.gz file, where the value of each pixel represents the label of that pixel.
+        labels: a list of integers, specifying label values.
+        affine: bool, whether or not to return an affine matrix
+
+    Returns:
+        Label (numpy array, (n_label, x, y, z)) (and affine matrix (4*4) if affine is True)
+
+    """
     label, affine_matrix = read_nii_image(label_path)
     X, Y, Z = label.shape
 
@@ -49,10 +68,19 @@ def read_nii_label(label_path: Path, labels: List[int], affine: bool = True) -> 
         return label
 
 
-def rescale_intensity(image, thres: List[float] = None):
-    """ Rescale the image intensity to the range of [0, 1] """
-    if thres is not None:
-        val_l, val_h = np.percentile(image, thres)
+def rescale_intensity(image: np.ndarray, percentiles: List[float] = None):
+    """ Rescale the image intensity  to the range of [0, 1], according to percentile or if not provided, min max values.
+    If percentiles are provided, then values outside of the percentiles will be set to the values of percentiles.
+
+    Args:
+        image: numpy array
+        percentiles: intensity values clip off percentiles, such as (1, 99)
+
+    Return:
+        Image with rescaled intensity in the range of []
+    """
+    if percentiles is not None:
+        val_l, val_h = np.percentile(image, percentiles)
         image2 = image
         image2[image < val_l] = val_l
         image2[image > val_h] = val_h
@@ -65,8 +93,16 @@ def rescale_intensity(image, thres: List[float] = None):
     return image2
 
 
-def normalise_intensity(image, thres_roi=10.0):
-    """ Normalise the image intensity by the mean and standard deviation """
+def normalise_intensity(image: np.ndarray, thres_roi=10.0):
+    """ Normalise the image intensity by the mean and standard deviation
+
+    Args:
+        image: numpy array
+        thres_roi: default 10.0, threshold percentile, mean and std are computed with values above this percentile
+
+    Return:
+        Normalised image
+    """
     val_l = np.percentile(image, thres_roi)
     roi = (image >= val_l)
     mu, sigma = np.mean(image[roi]), np.std(image[roi])
@@ -76,6 +112,16 @@ def normalise_intensity(image, thres_roi=10.0):
 
 
 def resize_image(image: np.ndarray, target_shape: Tuple, order: int = 0):
+    """ Resize nifty image
+
+    Args:
+        image: numpy array
+        target_shape: tuple, such as (x, y, z)
+        order: integer, the order of approximation, default is 0, which is choosing the nearest value.
+
+    Returns:
+        Resized image
+    """
     image_shape = image.shape
     factors = [float(target_shape[i]) / image_shape[i] for i in range(len(image_shape))]
     output = zoom(image, factors, order=order)
@@ -83,6 +129,16 @@ def resize_image(image: np.ndarray, target_shape: Tuple, order: int = 0):
 
 
 def resize_label(label: np.ndarray, target_shape: Tuple):
+    """ Resize nifty image
+
+    Args:
+        label: numpy array, shape (n_label, x, y, z)
+        target_shape: tuple, such as (x, y, z)
+
+    Returns:
+        Resized label
+
+    """
     # label: (3, H, W, D)
     label_shape = label.shape
     factors = [float(target_shape[i - 1]) / label_shape[i] for i in range(1, len(label_shape))]
@@ -95,8 +151,14 @@ def resize_label(label: np.ndarray, target_shape: Tuple):
 
 
 def set_affine(from_image: Path, to_image: Path):
-    """
-        Set the affine matrix from from_image to to_image.
+    """ Set the affine matrix of from_image to to_image.
+
+    Args:
+        from_image: path of nifty image
+        to_image: path of nifty image
+
+    Returns:
+        None
     """
     nim = nib.load(str(from_image))
     nim2 = nib.load(str(to_image))
@@ -107,9 +169,17 @@ def set_affine(from_image: Path, to_image: Path):
     nib.save(nim3, str(to_image))
 
 
-def split_volume(image_name, output_name):
-    """ Split an image volume into a number of slices. """
-    nim = nib.load(image_name)
+def split_volume(image_name: Union[Path, str], output_name: str):
+    """ Split an image volume into a number of slices.
+
+    Args:
+        image_name: path of a nifty image
+        output_name: output filename prefix
+
+    Returns:
+        None
+    """
+    nim = nib.load(str(image_name))
     Z = nim.header['dim'][3]
     affine = nim.affine
     image = nim.get_data()
@@ -123,9 +193,18 @@ def split_volume(image_name, output_name):
         nib.save(nim2, '{0}{1:02d}.nii.gz'.format(output_name, z))
 
 
-def split_sequence(image_name, output_name):
-    """ Split an image sequence into a number of time frames. """
-    nim = nib.load(image_name)
+def split_sequence(image_name: Union[Path, str], output_name: str):
+    """ Split an image sequence into a number of time frames.
+
+    Args:
+        image_name: path of a nifty image
+        output_name: output filename prefix
+
+    Returns:
+        None
+    """
+
+    nim = nib.load(str(image_name))
     T = nim.header['dim'][4]
     affine = nim.affine
     image = nim.get_data()
@@ -138,25 +217,42 @@ def split_sequence(image_name, output_name):
 
 def categorical_dice(prediction: np.ndarray, truth: np.ndarray, k: int, is_one_hot: bool = False,
                      n_classes: int = None, epsilon: float = 0.001):
+    """ Dice overlap metric for label k
+    prediction and truth can be one-hot encoded or integer encoded.
+    If one-hot encoded, they are of the shape (K, D, H, W), or (K, H, W)
+    If integer encoded, they are of the shape (D, H, W), or (H, W), and n_classes must be provided.
+    epsilon is for numerical stability, to avoid 0/0
+
+    Args:
+        prediction: numpy array
+        truth: numpy array
+        k: integer, label k
+        is_one_hot: optional, boolean, if label maps are one-hot encoded
+        n_classes: optional, integer, this is needed if is_one_hot is false
+        epsilon: float, for numerical stability
+
+    Returns:
+        Dice score, float
     """
-        Dice overlap metric for label k
-        prediction and truth can be one-hot encoded or integer encoded.
-        If one-hot encoded, they are of the shape (K, D, H, W), or (K, H, W)
-        If integer encoded, they are of the shape (D, H, W), or (H, W), and n_classes must be provided.
-        epsilon is for numerical stability, to avoid 0/0
-    """
+
     if not is_one_hot:
         assert n_classes is not None
         prediction = one_hot_encode_label(prediction, n_classes)
 
-    A = (np.argmax(prediction, axis=1) == k)
-    B = (np.argmax(truth, axis=1) == k)
+    A = (np.argmax(prediction, axis=0) == k)
+    B = (np.argmax(truth, axis=0) == k)
     return 2 * np.sum(A * B) / (np.sum(A) + np.sum(B) + epsilon)
 
 
 def one_hot_encode_label(label: np.ndarray, n_classes: int):
-    """
-        Label can be of the shape (D, H, W), or (H, W)
+    """ Label can be of the shape (D, H, W), or (H, W)
+
+    Args:
+        label: numpy array, integer value encoded
+        n_classes: number of classes
+
+    Returns:
+        one-hot encoded label, shape (n_classes, D, H, W) or (n_classes, H, W)
     """
     label_flat = label.flatten()
     n_data = len(label_flat)
@@ -166,4 +262,5 @@ def one_hot_encode_label(label: np.ndarray, n_classes: int):
         label_one_hot = label_one_hot.reshape((label.shape[0], label.shape[1], label.shape[2], n_classes))
     else:
         label_one_hot = label_one_hot.reshape((label.shape[0], label.shape[1], n_classes))
+    label_one_hot = np.moveaxis(label_one_hot, -1, 0)
     return label_one_hot
