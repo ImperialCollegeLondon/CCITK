@@ -22,6 +22,7 @@ def parse_args():
     parser.add_argument("--n-partition", dest="n_partition", type=int)
     parser.add_argument("--output-dir", dest="output_dir", type=str)
     parser.add_argument("--n-thread", dest="n_thread", type=int, default=0)
+    parser.add_argument("--fields", nargs="+", choices=["la", "sa", "ao"], type=str, default=["la", "sa", "ao"])
     return parser.parse_args()
 
 
@@ -36,7 +37,7 @@ def partition_csv(csv_path: Path, n_partition: int, output_dir: Path):
     return csvs
 
 
-def create_batch_files(key_path: Path, ukbfetch_path: Path, part_csv_files: List[Path], output_dir: Path, n_thread) -> List[Path]:
+def create_batch_files(key_path: Path, ukbfetch_path: Path, part_csv_files: List[Path], output_dir: Path, n_thread, fields: List[str]) -> List[Path]:
     job_script_path = CWD.joinpath("job.py")
     python_command = f"python {str(job_script_path)}"
     with open(str(CWD.joinpath("batch_template.txt")), "r") as file:
@@ -44,9 +45,10 @@ def create_batch_files(key_path: Path, ukbfetch_path: Path, part_csv_files: List
     temp_batch_file_dir = output_dir.joinpath("temp")
     temp_batch_file_dir.mkdir(exist_ok=True, parents=True)
     batch_files = []
+    fields = " ".join(fields)
     for idx, csv_file in enumerate(part_csv_files):
         command = python_command + f" --key-path {str(key_path)} --ukbfetch-path {str(ukbfetch_path)} " \
-                                   f"--csv-file {str(csv_file)} --output-dir {str(output_dir)}  --n-thread {n_thread}"
+                                   f"--csv-file {str(csv_file)} --output-dir {str(output_dir)}  --n-thread {n_thread} --fields {fields}"
         batch = sbatch.format(idx + 1) + f"{command}\n"
         batch_file = temp_batch_file_dir.joinpath(f"job_{idx}.sh")
         with open(str(batch_file), "w") as file:
@@ -70,7 +72,7 @@ def main():
     n_partition = args.n_partition
 
     part_csv_files = partition_csv(csv_file, n_partition, output_dir.joinpath("temp", "csv"))
-    batch_files = create_batch_files(key_path, ukbfetch_path, part_csv_files, output_dir, args.n_thread)
+    batch_files = create_batch_files(key_path, ukbfetch_path, part_csv_files, output_dir, args.n_thread, args.fields)
     submit_batch_files(batch_files)
 
 
