@@ -46,6 +46,7 @@ if __vtk_installed__:
     __all__ += ["landmark", "mesh", "visual"]
     try:
         import imageio, trimesh, meshcut, vedo
-    except:
         from . import visual  # imageio trimesh vtk meshcut vedo
         __all__ += ["visual"]
+    except ModuleNotFoundError:
+        pass
