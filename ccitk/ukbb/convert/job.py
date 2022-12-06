@@ -26,6 +26,8 @@ from tqdm import tqdm
 import multiprocessing as mp
 import shutil
 from argparse import ArgumentParser
+from typing import List
+from ccitk.ukbb.const import UKBBFieldKey
 
 
 def parse_args():
@@ -36,37 +38,48 @@ def parse_args():
                         help="List of EIDs to download, column name eid")
     parser.add_argument("--output-dir", dest="output_dir", type=str, required=True)
     parser.add_argument("--n-thread", dest="n_thread", type=int, default=0)
+    parser.add_argument("--fields", nargs="+", choices=["la", "sa", "ao"], type=str, default=["la", "sa", "ao"])
 
     return parser.parse_args()
 
 
-def function(eid, input_dir: Path, output_dir: Path):
+def function(eid: str, fields: List[UKBBFieldKey], input_dir: Path, output_dir: Path):
     dicom_dir = output_dir.joinpath("dicom", f"{eid}")
     dicom_dir.mkdir(parents=True, exist_ok=True)
     nii_dir = output_dir.joinpath("nii", f"{eid}")
     nii_dir.mkdir(parents=True, exist_ok=True)
 
-    if nii_dir.joinpath("la_2ch.nii.gz").exists() and \
-            nii_dir.joinpath("la_3ch.nii.gz").exists() and \
-            nii_dir.joinpath("la_4ch.nii.gz").exists() and \
-            nii_dir.joinpath("sa.nii.gz").exists():
-        return
+    dirs = []
+    for field in fields:
+        if field in [UKBBFieldKey.la, UKBBFieldKey.sa]:
+            if nii_dir.joinpath("la_2ch.nii.gz").exists() and \
+                    nii_dir.joinpath("la_3ch.nii.gz").exists() and \
+                    nii_dir.joinpath("la_4ch.nii.gz").exists() and \
+                    nii_dir.joinpath("sa.nii.gz").exists():
+                return
 
-    zip_dir = input_dir
-    la_zip = zip_dir.joinpath(f"{eid}_20208_2_0.zip")
-    sa_zip = zip_dir.joinpath(f"{eid}_20209_2_0.zip")
-    assert sa_zip.exists(), f"str({sa_zip}) not exist"
-    assert la_zip.exists(), f"str({la_zip}) not exist"
+        zip_dir = input_dir
+        zip_file = zip_dir.joinpath(f"{eid}_{field.value}_2_0.zip")
+        assert zip_file.exists(), f"str({zip_file}) not exist"
+        dicom_dir = dicom_dir.joinpath(field.name)
+        os.system('unzip -o {0} -d {1}'.format(str(zip_file), str(dicom_dir)))
+        dirs.append(dicom_dir)
 
-    la_dicom_dir = dicom_dir.joinpath("la")
-    la_dicom_dir.mkdir(parents=True, exist_ok=True)
-    sa_dicom_dir = dicom_dir.joinpath("sa")
-    sa_dicom_dir.mkdir(parents=True, exist_ok=True)
+    # la_zip = zip_dir.joinpath(f"{eid}_20208_2_0.zip")
+    # sa_zip = zip_dir.joinpath(f"{eid}_20209_2_0.zip")
+    # ao_zip = zip_dir.joinpath(f"{eid}_20210_2_0.zip")
+    # assert sa_zip.exists(), f"str({sa_zip}) not exist"
+    # assert la_zip.exists(), f"str({la_zip}) not exist"
 
-    os.system('unzip -o {0} -d {1}'.format(str(sa_zip), str(sa_dicom_dir)))
-    os.system('unzip -o {0} -d {1}'.format(str(la_zip), str(la_dicom_dir)))
+    # la_dicom_dir = dicom_dir.joinpath("la")
+    # la_dicom_dir.mkdir(parents=True, exist_ok=True)
+    # sa_dicom_dir = dicom_dir.joinpath("sa")
+    # sa_dicom_dir.mkdir(parents=True, exist_ok=True)
+    #
+    # os.system('unzip -o {0} -d {1}'.format(str(sa_zip), str(sa_dicom_dir)))
+    # os.system('unzip -o {0} -d {1}'.format(str(la_zip), str(la_dicom_dir)))
 
-    for directory in [la_dicom_dir, sa_dicom_dir]:
+    for directory in dirs:
         # Process the manifest file
         if directory.joinpath('manifest.cvs').exists():
             os.system('cp {0} {1}'.format(str(directory.joinpath('manifest.cvs')),
@@ -105,6 +118,7 @@ def main():
     csv_file = Path(args.csv_file)
     output_dir = Path(args.output_dir)
     n_thread = args.n_thread
+    fields = [int(UKBBFieldKey[f]) for f in args.fields]
     df = pd.read_csv(str(csv_file))
     data_list = df['eid']
 
@@ -118,7 +132,7 @@ def main():
     if n_thread == 0:
         for i in pbar:
             eid = str(data_list[i])
-            function(eid, input_dir, output_dir)
+            function(eid, fields, input_dir, output_dir)
     else:
         def update(*a):
             pbar.update()
@@ -126,7 +140,7 @@ def main():
         # setup multiprocessing
         for i in range(pbar.total):
             eid = str(data_list[i])
-            pool.apply_async(func=function, args=(eid, input_dir, output_dir), callback=update)
+            pool.apply_async(func=function, args=(eid, fields, input_dir, output_dir), callback=update)
         pool.close()
         pool.join()
 
