@@ -12,3 +12,6 @@ tmp/
 _build/
 _static/
 _templates/
+*.log
+*.lis
+*.tmp_bulk

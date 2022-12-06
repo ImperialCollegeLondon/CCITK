@@ -26,7 +26,16 @@ import multiprocessing as mp
 import shutil
 from argparse import ArgumentParser
 from typing import List
-from ccitk.ukbb.const import UKBBFieldKey
+from enum import IntEnum
+
+
+class UKBBFieldKey(IntEnum):
+    # 20208: Long axis heart images - DICOM Heart MRI
+    # 20209: Short axis heart images - DICOM Heart MRI
+    # 20210: Aortic distensibilty images - DICOM Heart MRI
+    la = 20208
+    sa = 20209
+    ao = 20210
 
 
 def parse_args():
@@ -66,18 +75,18 @@ def function(eid: str, fields: List[UKBBFieldKey], ukbkey: Path, ukbfetch: Path,
             field = '{0}-2.0'.format(j)
             f_batch.write('{0} {1}_2_0\n'.format(eid, j))
 
-        # Download the data using the batch file
-        # ukbfetch = os.path.join(util_dir, 'ukbfetch')
-        # print('Downloading data for subject {} ...'.format(eid))
-        command = '{0} -b{1} -a{2}'.format(ukbfetch, str(batch_file), ukbkey)
-        os.system('{0} -b{1} -a{2}'.format(ukbfetch, str(batch_file), ukbkey))
-        print("Download finished")
-        # Unpack the data
-        for f in Path(__file__).parent.glob('{0}_*.zip'.format(eid)):
-            shutil.move(str(f), str(zip_dir.joinpath(f.name)))
-        print("Move finished")
+    # Download the data using the batch file
+    # ukbfetch = os.path.join(util_dir, 'ukbfetch')
+    # print('Downloading data for subject {} ...'.format(eid))
+    command = '{0} -b{1} -a{2}'.format(ukbfetch, str(batch_file), ukbkey)
+    os.system('{0} -b{1} -a{2}'.format(ukbfetch, str(batch_file), ukbkey))
+    print("Download finished")
+    # Unpack the data
+    for f in Path(__file__).parent.glob('{0}_*.zip'.format(eid)):
+        shutil.move(str(f), str(zip_dir.joinpath(f.name)))
+    print("Move finished")
 
-        batch_file.unlink()
+    batch_file.unlink()
 
     return "finished"
 
@@ -90,7 +99,7 @@ def main():
     ukbfetch_path = Path(args.ukbfetch_path)
     output_dir = Path(args.output_dir)
     n_thread = args.n_thread
-    fields = [int(UKBBFieldKey[f]) for f in args.fields]
+    fields = [UKBBFieldKey[f] for f in args.fields]
     df = pd.read_csv(str(csv_file))
     data_list = df['eid']
 

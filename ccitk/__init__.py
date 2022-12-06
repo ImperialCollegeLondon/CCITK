@@ -43,5 +43,5 @@ if __torch_installed__:
 if __vtk_installed__:
     from . import landmark
     from . import mesh
-    from . import visual
+    # from . import visual # trimesh needed
     __all__ += ["landmark", "mesh", "visual"]
