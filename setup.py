@@ -15,7 +15,7 @@ setup(
     entry_points={
         "console_scripts": [
             "ccitk-ukbb-download = ccitk.ukbb.download.master:main",
-            "ccitk-ukbb-convert = ccitk.ukbb.convert.cli:main",
+            "ccitk-ukbb-convert = ccitk.ukbb.convert.master:main",
             "ccitk-ukbb-segment = ccitk.ukbb.segment.cli:main",
             "ccitk-ukbb-analyze = ccitk.ukbb.analyze.cli:main",
             "ccitk-cmr-segment = ccitk.cmr_segment.cli:main",

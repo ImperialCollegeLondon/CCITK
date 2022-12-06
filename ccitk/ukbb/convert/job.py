@@ -59,6 +59,8 @@ def function(eid: str, fields: List[UKBBFieldKey], input_dir: Path, output_dir: 
     nii_dir.mkdir(parents=True, exist_ok=True)
 
     dirs = []
+    zip_dir = input_dir
+
     for field in fields:
         if field in [UKBBFieldKey.la, UKBBFieldKey.sa]:
             if nii_dir.joinpath("la_2ch.nii.gz").exists() and \
@@ -67,7 +69,6 @@ def function(eid: str, fields: List[UKBBFieldKey], input_dir: Path, output_dir: 
                     nii_dir.joinpath("sa.nii.gz").exists():
                 return
 
-        zip_dir = input_dir
         zip_file = zip_dir.joinpath(f"{eid}_{field.value}_2_0.zip")
         assert zip_file.exists(), f"str({zip_file}) not exist"
         dicom_dir = dicom_dir.joinpath(field.name)

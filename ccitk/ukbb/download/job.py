@@ -82,6 +82,8 @@ def function(eid: str, fields: List[UKBBFieldKey], ukbkey: Path, ukbfetch: Path,
     os.system('{0} -b{1} -a{2}'.format(ukbfetch, str(batch_file), ukbkey))
     print("Download finished")
     # Unpack the data
+    # TODO: this assumes that the code is run under this subdirectory and temp files and log files
+    #  will be put into this directory
     for f in Path(__file__).parent.glob('{0}_*.zip'.format(eid)):
         shutil.move(str(f), str(zip_dir.joinpath(f.name)))
     print("Move finished")
