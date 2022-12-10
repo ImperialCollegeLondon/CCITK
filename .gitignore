@@ -15,3 +15,5 @@ _templates/
 *.log
 *.lis
 *.tmp_bulk
+*.zip
+*.csv

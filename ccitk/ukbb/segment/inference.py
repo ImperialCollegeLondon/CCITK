@@ -19,18 +19,21 @@ import numpy as np
 import nibabel as nib
 from tqdm import tqdm
 from pathlib import Path
-import tensorflow.compat.v1 as tf
+from typing import List
+try:
+    import tensorflow.compat.v1 as tf
+    tf.disable_v2_behavior()
+except ModuleNotFoundError:
+    import tensorflow as tf
 from ccitk.image import rescale_intensity
 from ccitk.image import normalise_intensity
 
-tf.disable_v2_behavior()
 
-
-def segment_sa_la(data_dir: Path, seq_name: str, model_path: Path, seg4: bool = False, process_seq: bool = True,
-                  save_seg: bool = True, output_dir: Path = None):
+def segment_sa_la(data_list: List[Path], seq_name: str, model_path: Path, seg4: bool = False, process_seq: bool = True,
+                  save_seg: bool = True):
     """ Deployment parameters """
 
-    with tf.Session() as sess:
+    with tf.Session(config=tf.ConfigProto(log_device_placement=True)) as sess:
         sess.run(tf.global_variables_initializer())
 
         # Import the computation graph and restore the variable values
@@ -41,17 +44,14 @@ def segment_sa_la(data_dir: Path, seq_name: str, model_path: Path, seg4: bool = 
         start_time = time.time()
 
         # Process each subject subdirectory
-        data_list = sorted(os.listdir(str(data_dir)))
+        # data_list = sorted(os.listdir(str(data_dir)))
         processed_list = []
         table_time = []
-        for data in tqdm(data_list):
+        for data_path in tqdm(data_list):
+            data = data_path.name
             print(data)
-            subject_dir = data_dir.joinpath(data)
-            if output_dir is None:
-                output_subject_dir = subject_dir
-            else:
-                output_subject_dir = output_dir.joinpath(data)
-                output_subject_dir.mkdir(parents=True, exist_ok=True)
+            subject_dir = data_path
+            output_subject_dir = subject_dir
 
             if seq_name == 'la_4ch' and seg4:
                 seg_name = output_subject_dir.joinpath(f"seg4_{seq_name}.nii.gz")
@@ -220,10 +220,11 @@ def segment_sa_la(data_dir: Path, seq_name: str, model_path: Path, seg4: bool = 
             process_time, len(processed_list), process_time / len(processed_list)))
 
 
-def segment_ao(data_dir: str, model: str, model_path: str, seq_name: str, time_step: int = 1,
+def segment_ao(data_list: List[Path], model: str, model_path: str, seq_name: str, time_step: int = 1,
                process_seq: bool = True, save_seg: bool = True, z_score: bool = False,
                weight_R: int = 5, weight_r: float = 0.1):
-    with tf.Session() as sess:
+
+    with tf.Session(config=tf.ConfigProto(log_device_placement=True)) as sess:
         sess.run(tf.global_variables_initializer())
 
         # Import the computation graph and restore the variable values
@@ -234,17 +235,19 @@ def segment_ao(data_dir: str, model: str, model_path: str, seq_name: str, time_s
         start_time = time.time()
 
         # Process each subject subdirectory
-        data_list = sorted(os.listdir(data_dir))
+        # data_list = sorted(os.listdir(data_dir))
         processed_list = []
         table = []
-        for data in tqdm(data_list):
+        for data_path in tqdm(data_list):
+            data = data_path.name
             print(data)
-            subject_dir = os.path.join(data_dir, data)
+            subject_dir = str(data_path)
 
             if process_seq:
                 # Process the temporal sequence
                 image_name = '{0}/{1}.nii.gz'.format(subject_dir, seq_name)
-
+                if Path('{0}/seg_{1}.nii.gz'.format(subject_dir, seq_name)).exists():
+                    continue
                 if not os.path.exists(image_name):
                     print('  Directory {0} does not contain an image with file name {1}. '
                           'Skip.'.format(subject_dir, os.path.basename(image_name)))
@@ -372,6 +375,7 @@ def segment_ao(data_dir: str, model: str, model_path: str, seq_name: str, time_s
                 print('  Segmentation time = {:3f}s'.format(seg_time))
                 processed_list += [data]
             else:
+
                 if model == 'UNet-LSTM':
                     print('UNet-LSTM does not support frame-wise segmentation. '
                           'Please use the -process_seq flag.')
@@ -387,6 +391,8 @@ def segment_ao(data_dir: str, model: str, model_path: str, seq_name: str, time_s
 
                 measure = {}
                 for fr in ['ED', 'ES']:
+                    if Path('{0}/seg_{1}_{2}.nii.gz'.format(subject_dir, seq_name, fr)).exists():
+                        continue
                     image_name = '{0}/{1}_{2}.nii.gz'.format(subject_dir, seq_name, fr)
 
                     # Read the image

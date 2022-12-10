@@ -18,21 +18,23 @@ import pandas as pd
 import nibabel as nib
 from tqdm import tqdm
 from pathlib import Path
+from typing import List
 from .cardiac_utils import cine_2d_sa_motion_and_strain_analysis, sa_pass_quality_control, evaluate_wall_thickness
 
 
-def eval_ventricular_volume(data_dir: str, output_csv: str):
-    data_path = data_dir
-    data_list = sorted(os.listdir(data_path))
+def eval_ventricular_volume(data_list: List[Path], output_csv: str):
+    # data_path = data_dir
+    # data_list = sorted(os.listdir(data_path))
     table = []
     processed_list = []
     for data in tqdm(data_list):
-        data_dir = os.path.join(data_path, data)
+        # data_dir = os.path.join(data_path, data)
+        data_dir = str(data)
         image_name = '{0}/sa.nii.gz'.format(data_dir)
         seg_name = '{0}/seg_sa.nii.gz'.format(data_dir)
 
         if os.path.exists(image_name) and os.path.exists(seg_name):
-            print(data)
+            print(data.name)
 
             # Image
             nim = nib.load(image_name)
@@ -70,7 +72,7 @@ def eval_ventricular_volume(data_dir: str, output_csv: str):
             line = [val['LVEDV'], val['LVESV'], val['LVSV'], val['LVEF'], val['LVCO'], val['LVEDM'],
                     val['RVEDV'], val['RVESV'], val['RVSV'], val['RVEF']]
             table += [line]
-            processed_list += [data]
+            processed_list += [str(data.name)]
 
     df = pd.DataFrame(table, index=processed_list,
                       columns=['LVEDV (mL)', 'LVESV (mL)', 'LVSV (mL)', 'LVEF (%)', 'LVCO (L/min)', 'LVM (g)',
@@ -78,19 +80,20 @@ def eval_ventricular_volume(data_dir: str, output_csv: str):
     df.to_csv(output_csv)
 
 
-def eval_strain_sax(data_dir: str, output_csv: str, par_dir: str = None, start_idx: int = 0, end_idx: int = 0):
+def eval_strain_sax(data_list: List[Path], output_csv: str, par_dir: str = None, start_idx: int = 0, end_idx: int = 0):
     if par_dir is None:
         par_dir = Path(__file__).parent.joinpath("par").absolute()
 
-    data_path = data_dir
-    data_list = sorted(os.listdir(data_path))
+    # data_path = data_dir
+    # data_list = sorted(os.listdir(data_path))
     n_data = len(data_list)
     end_idx = n_data if end_idx == 0 else end_idx
     table = []
     processed_list = []
     for data in tqdm(data_list[start_idx:end_idx]):
         print(data)
-        data_dir = os.path.join(data_path, data)
+        # data_dir = os.path.join(data_path, data)
+        data_dir = str(data)
 
         # Quality control for segmentation at ED
         # If the segmentation quality is low, the following functions may fail.
@@ -121,7 +124,7 @@ def eval_strain_sax(data_dir: str, output_csv: str, par_dir: str = None, start_i
             df_circum = pd.read_csv('{0}/strain_sa_circum.csv'.format(data_dir), index_col=0)
             line = [df_circum.iloc[i, :].min() for i in range(17)] + [df_radial.iloc[i, :].max() for i in range(17)]
             table += [line]
-            processed_list += [data]
+            processed_list += [data.name]
 
     # Save strain values for all the subjects
     df = pd.DataFrame(table, index=processed_list,
@@ -140,21 +143,24 @@ def eval_strain_sax(data_dir: str, output_csv: str, par_dir: str = None, start_i
     df.to_csv(output_csv)
 
 
-def eval_wall_thickness(data_dir: str, output_csv: str):
-    data_path = data_dir
-    data_list = sorted(os.listdir(data_path))
+def eval_wall_thickness(data_list: List[Path], output_csv: str):
+    # data_path = data_dir
+    # data_list = sorted(os.listdir(data_path))
     table = []
     processed_list = []
     for data in tqdm(data_list):
         print(data)
-        data_dir = os.path.join(data_path, data)
+        # data_dir = os.path.join(data_path, data)
+        data_dir = str(data)
 
         # Quality control for segmentation at ED
         # If the segmentation quality is low, evaluation of wall thickness may fail.
         seg_sa_name = '{0}/seg_sa_ED.nii.gz'.format(data_dir)
         if not os.path.exists(seg_sa_name):
+            print("Seg not exist", seg_sa_name)
             continue
         if not sa_pass_quality_control(seg_sa_name):
+            print("Quality control failed", seg_sa_name)
             continue
 
         # Evaluate myocardial wall thickness
@@ -166,7 +172,7 @@ def eval_wall_thickness(data_dir: str, output_csv: str):
             df = pd.read_csv('{0}/wall_thickness_ED.csv'.format(data_dir), index_col=0)
             line = df['Thickness'].values
             table += [line]
-            processed_list += [data]
+            processed_list += [data.name]
 
     # Save wall thickness for all the subjects
     df = pd.DataFrame(table, index=processed_list,

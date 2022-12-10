@@ -1,0 +1,20 @@
+#!/bin/bash
+
+# Example of running python script in a batch mode
+#SBATCH -c {n_cpu}                       # Number of CPU Cores
+#SBATCH --mem {mem}                 # memory pool for all cores
+#SBATCH --output={log_output}    # Standard output and error log
+
+#SBATCH -p {partition}                     # Partition (queue)
+#SBATCH --gres gpu:{n_gpu}                # gpu:n, where n = number of GPUs
+#SBATCH --nodelist {nodelist}       # SLURM node
+
+# Source virtual environment (pip)
+export PATH=$PATH:/vol/biomedic2/wbai/git/MIRTK_bin/bin/:/vol/biomedic2/wbai/git/ukbb_cardiac/third_party/ubuntu_18.04_bin/
+export CUDA_HOME=/vol/cuda/11.3.1-cudnn8.2.1/
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/vol/cuda/11.3.1-cudnn8.2.1/targets/x86_64-linux/lib/
+
+source {venv_path}
+
+# Run python script
+{python_command}

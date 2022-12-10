@@ -19,7 +19,7 @@ The script downloads the cardiac MR images for a UK Biobank Application given cs
 import os
 import glob
 import pandas as pd
-from .biobank_utils import process_manifest, Biobank_Dataset
+from ccitk.ukbb.convert.biobank_utils import process_manifest, Biobank_Dataset
 import dateutil.parser
 from pathlib import Path
 from tqdm import tqdm
@@ -39,7 +39,7 @@ class UKBBFieldKey(IntEnum):
     ao = 20210
 
 
-def parse_args():
+def make_parser():
     parser = ArgumentParser()
     parser.add_argument("--input-dir", dest="input_dir", type=str, required=True,
                         help="input dir of the downloaded zip files")
@@ -48,7 +48,11 @@ def parse_args():
     parser.add_argument("--output-dir", dest="output_dir", type=str, required=True)
     parser.add_argument("--n-thread", dest="n_thread", type=int, default=0)
     parser.add_argument("--fields", nargs="+", choices=["la", "sa", "ao"], type=str, default=["la", "sa", "ao"])
+    return parser
 
+
+def parse_args():
+    parser = make_parser()
     return parser.parse_args()
 
 
@@ -70,10 +74,12 @@ def function(eid: str, fields: List[UKBBFieldKey], input_dir: Path, output_dir: 
                 return
 
         zip_file = zip_dir.joinpath(f"{eid}_{field.value}_2_0.zip")
+        if not zip_file.exists():
+            continue
+        dicom_dir_dir = dicom_dir.joinpath(field.name)
         assert zip_file.exists(), f"str({zip_file}) not exist"
-        dicom_dir = dicom_dir.joinpath(field.name)
-        os.system('unzip -o {0} -d {1}'.format(str(zip_file), str(dicom_dir)))
-        dirs.append(dicom_dir)
+        os.system('unzip -o {0} -d {1}'.format(str(zip_file), str(dicom_dir_dir)))
+        dirs.append(dicom_dir_dir)
 
     # la_zip = zip_dir.joinpath(f"{eid}_20208_2_0.zip")
     # sa_zip = zip_dir.joinpath(f"{eid}_20209_2_0.zip")
@@ -128,7 +134,7 @@ def main():
     csv_file = Path(args.csv_file)
     output_dir = Path(args.output_dir)
     n_thread = args.n_thread
-    fields = [int(UKBBFieldKey[f]) for f in args.fields]
+    fields = [UKBBFieldKey[f] for f in args.fields]
     df = pd.read_csv(str(csv_file))
     data_list = df['eid']
 

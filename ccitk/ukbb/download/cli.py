@@ -38,7 +38,7 @@ class UKBBFieldKey(IntEnum):
     ao = 20210
 
 
-def parse_args():
+def make_parser():
     parser = ArgumentParser()
     parser.add_argument("--csv-file", dest="csv_file", type=str, required=True, help="List of EIDs to download, column name eid")
     parser.add_argument("--key-path", dest="key_path", type=str, required=True)
@@ -46,7 +46,11 @@ def parse_args():
     parser.add_argument("--output-dir", dest="output_dir", type=str, required=True)
     parser.add_argument("--n-thread", dest="n_thread", type=int, default=0)
     parser.add_argument("--fields", nargs="+", choices=["la", "sa", "ao"], type=str, default=["la", "sa", "ao"])
+    return parser
 
+
+def parse_args():
+    parser = make_parser()
     return parser.parse_args()
 
 

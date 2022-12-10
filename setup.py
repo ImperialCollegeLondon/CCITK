@@ -14,10 +14,12 @@ setup(
     include_package_data=True,
     entry_points={
         "console_scripts": [
-            "ccitk-ukbb-download = ccitk.ukbb.download.master:main",
-            "ccitk-ukbb-convert = ccitk.ukbb.convert.master:main",
+            "ccitk-ukbb-batch-download = ccitk.ukbb.download.batch:main",
+            "ccitk-ukbb-batch-convert = ccitk.ukbb.convert.batch:main",
             "ccitk-ukbb-segment = ccitk.ukbb.segment.cli:main",
+            "ccitk-ukbb-batch-segment = ccitk.ukbb.segment.batch:main",
             "ccitk-ukbb-analyze = ccitk.ukbb.analyze.cli:main",
+            "ccitk-ukbb-batch-analyze = ccitk.ukbb.analyze.batch:main",
             "ccitk-cmr-segment = ccitk.cmr_segment.cli:main",
         ]
     },

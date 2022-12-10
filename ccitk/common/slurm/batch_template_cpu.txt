@@ -1,0 +1,16 @@
+#!/bin/bash
+
+# Example of running python script in a batch mode
+#SBATCH -c {n_cpu}                       # Number of CPU Cores
+#SBATCH --mem {mem}                      # memory pool for all cores
+#SBATCH --output={log_output}            # Standard output and error log
+
+#SBATCH -p {partition}                   # Partition (queue)
+#SBATCH --nodelist {nodelist}            # SLURM node
+
+# Source virtual environment (pip)
+export PATH=$PATH:/vol/biomedic2/wbai/git/MIRTK_bin/bin/:/vol/biomedic2/wbai/git/ukbb_cardiac/third_party/ubuntu_16.04_bin/
+source {venv_path}
+
+# Run python script
+{python_command}

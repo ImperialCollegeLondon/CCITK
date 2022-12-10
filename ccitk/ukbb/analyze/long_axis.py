@@ -19,24 +19,26 @@ import nibabel as nib
 import vtk
 import math
 from pathlib import Path
-from .cardiac_utils import atrium_pass_quality_control, evaluate_atrial_area_length
-from .cardiac_utils import la_pass_quality_control, cine_2d_la_motion_and_strain_analysis
+from ccitk.ukbb.analyze.cardiac_utils import atrium_pass_quality_control, evaluate_atrial_area_length
+from ccitk.ukbb.analyze.cardiac_utils import la_pass_quality_control, cine_2d_la_motion_and_strain_analysis
 from tqdm import tqdm
+from typing import List
 
 
-def eval_atrial_volume(data_dir: str, output_csv: str):
-    data_path = data_dir
-    data_list = sorted(os.listdir(data_path))
+def eval_atrial_volume(data_list: List[Path], output_csv: str):
+    # data_path = data_dir
+    # data_list = sorted(os.listdir(data_path))
     table = []
     processed_list = []
     for data in tqdm(data_list):
-        data_dir = os.path.join(data_path, data)
+        # data_dir = os.path.join(data_path, data)
+        data_dir = str(data)
         seg_la_2ch_name = '{0}/seg_la_2ch.nii.gz'.format(data_dir)
         seg_la_4ch_name = '{0}/seg_la_4ch.nii.gz'.format(data_dir)
         sa_name = '{0}/sa.nii.gz'.format(data_dir)
 
         if os.path.exists(seg_la_2ch_name) and os.path.exists(seg_la_4ch_name) and os.path.exists(sa_name):
-            print(data)
+            print(data.name)
 
             # Determine the long-axis from short-axis image
             nim_sa = nib.load(sa_name)
@@ -61,7 +63,7 @@ def eval_atrial_volume(data_dir: str, output_csv: str):
 
             # Perform quality control for the segmentation
             if not atrium_pass_quality_control(seg_la_2ch, {'LA': 1}):
-                print('{0} seg_la_2ch does not atrium_pass_quality_control.'.format(data))
+                print('{0} seg_la_2ch does not atrium_pass_quality_control.'.format(data.name))
                 continue
 
             A['LA_2ch'] = np.zeros(T)
@@ -157,7 +159,7 @@ def eval_atrial_volume(data_dir: str, output_csv: str):
             line = [val['LAV_bip_max'], val['LAV_bip_min'], val['LASV_bip'], val['LAEF_bip'],
                     val['RAV_4ch_max'], val['RAV_4ch_min'], val['RASV_4ch'], val['RAEF_4ch']]
             table += [line]
-            processed_list += [data]
+            processed_list += [data.name]
 
     df = pd.DataFrame(table, index=processed_list,
                       columns=['LAV max (mL)', 'LAV min (mL)', 'LASV (mL)', 'LAEF (%)',
@@ -165,18 +167,19 @@ def eval_atrial_volume(data_dir: str, output_csv: str):
     df.to_csv(output_csv)
 
 
-def eval_strain_lax(data_dir: str, output_csv: str, par_dir: str = None, start_idx: int = 0, end_idx: int = 0):
+def eval_strain_lax(data_list: List[Path], output_csv: str, par_dir: str = None, start_idx: int = 0, end_idx: int = 0):
     if par_dir is None:
         par_dir = Path(__file__).parent.joinpath("par").absolute()
-    data_path = data_dir
-    data_list = sorted(os.listdir(data_path))
+    # data_path = data_dir
+    # data_list = sorted(os.listdir(data_path))
     n_data = len(data_list)
     end_idx = n_data if end_idx == 0 else end_idx
     table = []
     processed_list = []
     for data in tqdm(data_list[start_idx:end_idx]):
-        print(data)
-        data_dir = os.path.join(data_path, data)
+        print(data.name)
+        # data_dir = os.path.join(data_path, data)
+        data_dir = str(data)
 
         # Quality control for segmentation at ED
         # If the segmentation quality is low, the following functions may fail.
@@ -205,7 +208,7 @@ def eval_strain_lax(data_dir: str, output_csv: str, par_dir: str = None, start_i
             df_longit = pd.read_csv('{0}/strain_la_4ch_longit.csv'.format(data_dir), index_col=0)
             line = [df_longit.iloc[i, :].min() for i in range(7)]
             table += [line]
-            processed_list += [data]
+            processed_list += [data.name]
 
     # Save strain values for all the subjects
     df = pd.DataFrame(table, index=processed_list,

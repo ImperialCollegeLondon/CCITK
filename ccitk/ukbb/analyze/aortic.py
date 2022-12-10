@@ -17,10 +17,12 @@ import numpy as np
 import nibabel as nib
 import pandas as pd
 from tqdm import tqdm
-from .cardiac_utils import aorta_pass_quality_control
+from ccitk.ukbb.analyze.cardiac_utils import aorta_pass_quality_control
+from typing import List
+from pathlib import Path
 
 
-def eval_aortic_area(data_dir: str, pressure_csv: str, output_csv: str):
+def eval_aortic_area(data_list: List[Path], pressure_csv: str, output_csv: str):
 
     # Read the spreadsheet for blood pressure information
     # Use central blood pressure provided by the Vicorder software
@@ -32,18 +34,24 @@ def eval_aortic_area(data_dir: str, pressure_csv: str, output_csv: str):
     # brachial-to-aortic transfer function. What I observed from the data and Figure 5 in the SOP pdf
     # (https://biobank.ctsu.ox.ac.uk/crystal/docs/vicorder_in_cmri.pdf) is that after the transfer, the DBP
     # keeps the same as the brachial DBP, but the SBP is different.
-    df_info = pd.read_csv(pressure_csv, header=[0, 1], index_col=0)
-    central_pp = df_info['Central pulse pressure during PWA'][['12678-2.0', '12678-2.1']].mean(axis=1)
 
+    # df_info = pd.read_csv(pressure_csv, header=[0, 1], index_col=0)
+    # central_pp = df_info['Central pulse pressure during PWA'][['12678-2.0', '12678-2.1']].mean(axis=1)
+    print("Begin loading csv")
+    df_info = pd.read_csv(pressure_csv, header=[0], index_col=0)
+    print(df_info)
+    central_pp = df_info[['12678-2.0', '12678-2.1']].mean(axis=1)
+    print("Finished loading csv")
     # Discard central blood pressure < 10 mmHg
     central_pp[central_pp < 10] = np.nan
 
-    data_path = data_dir
-    data_list = sorted(os.listdir(data_path))
+    # data_path = data_dir
+    # data_list = sorted(os.listdir(data_path))
     table = []
     processed_list = []
     for data in tqdm(data_list):
-        data_dir = os.path.join(data_path, data)
+        data_dir = str(data)
+        # data_dir = os.path.join(data_path, data)
         image_name = os.path.join(data_dir, 'ao.nii.gz')
         seg_name = os.path.join(data_dir, 'seg_ao.nii.gz')
 
@@ -70,12 +78,12 @@ def eval_aortic_area(data_dir: str, pressure_csv: str, output_csv: str):
                 A = np.sum(seg == l, axis=(0, 1, 2)) * area_per_pixel
                 val[l_name]['max area'] = A.max()
                 val[l_name]['min area'] = A.min()
-                val[l_name]['distensibility'] = (A.max() - A.min()) / (A.min() * central_pp.loc[int(data)]) * 1e3
+                val[l_name]['distensibility'] = (A.max() - A.min()) / (A.min() * central_pp.loc[int(data.name)]) * 1e3
 
             line = [val['AAo']['max area'], val['AAo']['min area'], val['AAo']['distensibility'],
                     val['DAo']['max area'], val['DAo']['min area'], val['DAo']['distensibility']]
             table += [line]
-            processed_list += [data]
+            processed_list += [data.name]
 
     # Save the spreadsheet for the measures
     df = pd.DataFrame(table, index=processed_list,

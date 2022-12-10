@@ -23,8 +23,8 @@ import matplotlib.pyplot as plt
 from vtk.util import numpy_support
 from scipy import interpolate
 import skimage
-from .image_utils import get_largest_cc, remove_small_cc, make_sequence
-from .image_utils import auto_crop_image, padding, np_categorical_dice
+from ccitk.ukbb.analyze.image_utils import get_largest_cc, remove_small_cc, make_sequence
+from ccitk.ukbb.analyze.image_utils import auto_crop_image, padding, np_categorical_dice
 from ccitk.image import split_sequence, split_volume
 
 
@@ -1743,7 +1743,8 @@ def aorta_pass_quality_control(image, seg):
         pixel_thres = 10
         for t in range(T):
             seg_t = seg[:, :, :, t]
-            cc, n_cc = skimage.measure.label(seg_t == l, neighbors=8, return_num=True)
+            # cc, n_cc = skimage.measure.label(seg_t == l, neighbors=8, return_num=True)
+            cc, n_cc = skimage.measure.label(seg_t == l, connectivity=2, return_num=True)
             count_cc = 0
             for i in range(1, n_cc + 1):
                 binary_cc = (cc == i)
