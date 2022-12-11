@@ -38,7 +38,7 @@ def eval_atrial_volume(data_list: List[Path], output_csv: str):
         sa_name = '{0}/sa.nii.gz'.format(data_dir)
 
         if os.path.exists(seg_la_2ch_name) and os.path.exists(seg_la_4ch_name) and os.path.exists(sa_name):
-            print(data.name)
+            print("atrial volume", data.name)
 
             # Determine the long-axis from short-axis image
             nim_sa = nib.load(sa_name)
@@ -177,7 +177,6 @@ def eval_strain_lax(data_list: List[Path], output_csv: str, par_dir: str = None,
     table = []
     processed_list = []
     for data in tqdm(data_list[start_idx:end_idx]):
-        print(data.name)
         # data_dir = os.path.join(data_path, data)
         data_dir = str(data)
 
@@ -188,6 +187,7 @@ def eval_strain_lax(data_list: List[Path], output_csv: str, par_dir: str = None,
             continue
         if not la_pass_quality_control(seg_la_name):
             continue
+        print("strain lax", data.name)
 
         # Intermediate result directory
         motion_dir = os.path.join(data_dir, 'cine_motion')

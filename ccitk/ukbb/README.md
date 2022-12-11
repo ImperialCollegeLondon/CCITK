@@ -15,7 +15,7 @@ export CUDA_HOME=/vol/cuda/11.3.1-cudnn8.2.1/
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/vol/cuda/11.3.1-cudnn8.2.1/targets/x86_64-linux/lib
 pip install torch --extra-index-url https://download.pytorch.org/whl/cu113/
 
-pip install nibabel scipy  # ccitk
+pip install nibabel scipy  # ccitk pyhocon
 
 pip install pandas numpy  # download
 
@@ -30,7 +30,7 @@ export PATH="$PATH:/vol/biomedic2/wbai/git/MIRTK_bin/bin"
 export PATH=$PATH:/vol/biomedic2/wbai/git/ukbb_cardiac/third_party/ubuntu_16.04_bin/
 
 
-# download job.py has to be run when in ukbb/download dir.
+# download job.py has to be run when in ukbb/download dir. 10k about 6-8 hours for sa, la and ao
 ccitk-ukbb-batch-download 
 # batch args
 --n-partition 10 --n-threads 0 
@@ -94,12 +94,12 @@ ccitk-ukbb-batch-analyze
 --partition-csv-dir /vol/biodata/data/biobank/40616/output/temp/csv
 # job args
 --sa --la --ao --data-dir /vol/biodata/data/biobank/40616/output/images/nii 
---outout-dir /vol/biodata/data/biobank/40616/output/
+--output-dir /vol/biodata/data/biobank/40616/output/
 # if --ao
---pressure-csv /vol/biodata/data/biobank/40616/csv/blood_pressure_info.csv
+--pressure-csv /vol/biodata/data/biobank/40616/csv/ukb52223_image_subset.csv
 
 # SLURM job management
-
+sinfo -lNe
 cat slurm.roc01.41941.log
 tail -f slurm.roc01.41941.log
 scancel 41941

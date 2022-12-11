@@ -58,9 +58,7 @@ def parse_args():
 
 def function(eid: str, fields: List[UKBBFieldKey], input_dir: Path, output_dir: Path):
     dicom_dir = output_dir.joinpath("dicom", f"{eid}")
-    dicom_dir.mkdir(parents=True, exist_ok=True)
     nii_dir = output_dir.joinpath("nii", f"{eid}")
-    nii_dir.mkdir(parents=True, exist_ok=True)
 
     dirs = []
     zip_dir = input_dir
@@ -76,26 +74,15 @@ def function(eid: str, fields: List[UKBBFieldKey], input_dir: Path, output_dir: 
         zip_file = zip_dir.joinpath(f"{eid}_{field.value}_2_0.zip")
         if not zip_file.exists():
             continue
+        nii_dir.mkdir(parents=True, exist_ok=True)
+        dicom_dir.mkdir(parents=True, exist_ok=True)
         dicom_dir_dir = dicom_dir.joinpath(field.name)
         assert zip_file.exists(), f"str({zip_file}) not exist"
         os.system('unzip -o {0} -d {1}'.format(str(zip_file), str(dicom_dir_dir)))
         dirs.append(dicom_dir_dir)
 
-    # la_zip = zip_dir.joinpath(f"{eid}_20208_2_0.zip")
-    # sa_zip = zip_dir.joinpath(f"{eid}_20209_2_0.zip")
-    # ao_zip = zip_dir.joinpath(f"{eid}_20210_2_0.zip")
-    # assert sa_zip.exists(), f"str({sa_zip}) not exist"
-    # assert la_zip.exists(), f"str({la_zip}) not exist"
-
-    # la_dicom_dir = dicom_dir.joinpath("la")
-    # la_dicom_dir.mkdir(parents=True, exist_ok=True)
-    # sa_dicom_dir = dicom_dir.joinpath("sa")
-    # sa_dicom_dir.mkdir(parents=True, exist_ok=True)
-    #
-    # os.system('unzip -o {0} -d {1}'.format(str(sa_zip), str(sa_dicom_dir)))
-    # os.system('unzip -o {0} -d {1}'.format(str(la_zip), str(la_dicom_dir)))
-
     for directory in dirs:
+
         # Process the manifest file
         if directory.joinpath('manifest.cvs').exists():
             os.system('cp {0} {1}'.format(str(directory.joinpath('manifest.cvs')),

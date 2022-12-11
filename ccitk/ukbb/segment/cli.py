@@ -26,11 +26,7 @@ def make_parser():
     parser.add_argument("--csv-file", dest="csv_file", type=str, required=True,
                         help="List of EIDs to download, column name eid")
 
-    # parser.add_argument("--output-dir", default=None, type=str)
     parser.add_argument("--model", choices=["sa", "ao", "la_2ch", "la_4ch", "la_4ch_seg4"], type=str, required=True)
-    # parser.add_argument(
-    #     "--model-path", type=str, help='Path to the saved trained model.', default=None
-    # )
 
     parser.add_argument("--process-seq", action="store_true", help="Process a time sequence of images.")
     parser.add_argument("--save-seg", action="store_true", help="Save segmentation")
