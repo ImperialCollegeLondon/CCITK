@@ -17,16 +17,14 @@ The script downloads the cardiac MR images for a UK Biobank Application given cs
 """
 
 import os
-import glob
-import pandas as pd
-import dateutil.parser
-from pathlib import Path
-from tqdm import tqdm
-import multiprocessing as mp
 import shutil
-from argparse import ArgumentParser
+import pandas as pd
+from tqdm import tqdm
 from typing import List
 from enum import IntEnum
+from pathlib import Path
+import multiprocessing as mp
+from argparse import ArgumentParser
 
 
 class UKBBFieldKey(IntEnum):

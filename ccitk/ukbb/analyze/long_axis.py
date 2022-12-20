@@ -13,16 +13,17 @@
 # limitations under the License.
 # =========================c===================================================
 import os
+import vtk
+import math
 import numpy as np
 import pandas as pd
 import nibabel as nib
-import vtk
-import math
-from pathlib import Path
-from ccitk.ukbb.analyze.cardiac_utils import atrium_pass_quality_control, evaluate_atrial_area_length
-from ccitk.ukbb.analyze.cardiac_utils import la_pass_quality_control, cine_2d_la_motion_and_strain_analysis
 from tqdm import tqdm
 from typing import List
+from pathlib import Path
+
+from ccitk.ukbb.analyze.cardiac_utils import atrium_pass_quality_control, evaluate_atrial_area_length
+from ccitk.ukbb.analyze.cardiac_utils import la_pass_quality_control, cine_2d_la_motion_and_strain_analysis
 
 
 def eval_atrial_volume(data_list: List[Path], output_csv: str):

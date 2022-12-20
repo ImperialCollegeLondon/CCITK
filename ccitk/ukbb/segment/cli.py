@@ -1,9 +1,9 @@
-from argparse import ArgumentParser
-from ccitk.ukbb.segment.inference import segment_sa_la, segment_ao
-from pathlib import Path
-import os
-import pandas as pd
 import inspect
+import pandas as pd
+from argparse import ArgumentParser
+from pathlib import Path
+
+from ccitk.ukbb.segment.inference import segment_sa_la, segment_ao
 
 
 DEFAULT_MODEL_DICT = {

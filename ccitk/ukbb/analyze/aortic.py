@@ -14,12 +14,13 @@
 # ==============================================================================
 import os
 import numpy as np
-import nibabel as nib
 import pandas as pd
+import nibabel as nib
 from tqdm import tqdm
-from ccitk.ukbb.analyze.cardiac_utils import aorta_pass_quality_control
 from typing import List
 from pathlib import Path
+
+from ccitk.ukbb.analyze.cardiac_utils import aorta_pass_quality_control
 
 
 def eval_aortic_area(data_list: List[Path], pressure_csv: str, output_csv: str):

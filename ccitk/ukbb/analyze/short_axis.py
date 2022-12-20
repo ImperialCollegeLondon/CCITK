@@ -19,7 +19,7 @@ import nibabel as nib
 from tqdm import tqdm
 from pathlib import Path
 from typing import List
-from .cardiac_utils import cine_2d_sa_motion_and_strain_analysis, sa_pass_quality_control, evaluate_wall_thickness
+from ccitk.ukbb.analyze.cardiac_utils import cine_2d_sa_motion_and_strain_analysis, sa_pass_quality_control, evaluate_wall_thickness
 
 
 def eval_ventricular_volume(data_list: List[Path], output_csv: str):

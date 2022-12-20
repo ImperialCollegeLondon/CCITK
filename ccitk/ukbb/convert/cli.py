@@ -17,17 +17,16 @@ The script downloads the cardiac MR images for a UK Biobank Application given cs
 """
 
 import os
-import glob
 import pandas as pd
-from ccitk.ukbb.convert.biobank_utils import process_manifest, Biobank_Dataset
-import dateutil.parser
-from pathlib import Path
 from tqdm import tqdm
+from enum import IntEnum
+from pathlib import Path
 import multiprocessing as mp
-import shutil
 from argparse import ArgumentParser
 from typing import List
-from enum import IntEnum
+
+from ccitk.ukbb.convert.biobank_utils import process_manifest, Biobank_Dataset
+
 
 
 class UKBBFieldKey(IntEnum):
