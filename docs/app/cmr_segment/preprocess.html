@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Preprocess &mdash; CCITK  documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/sphinx_highlight.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Segment" href="segment.html" />
+    <link rel="prev" title="Pipeline" href="pipeline.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> CCITK
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../api/index.html">API</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">Applications</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">CMRSegment</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="readme.html">README</a></li>
+<li class="toctree-l3"><a class="reference internal" href="config.html">config</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="pipeline.html">Pipeline</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="pipeline.html#ccitk.cmr_segment.pipeline.CMRPipeline"><code class="docutils literal notranslate"><span class="pre">CMRPipeline</span></code></a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">Preprocess</a></li>
+<li class="toctree-l4"><a class="reference internal" href="segment.html">Segment</a></li>
+<li class="toctree-l4"><a class="reference internal" href="mesh.html">Mesh</a></li>
+<li class="toctree-l4"><a class="reference internal" href="refine.html">Refine</a></li>
+<li class="toctree-l4"><a class="reference internal" href="motion.html">Motion</a></li>
+<li class="toctree-l4"><a class="reference internal" href="register.html">Register</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../ukbb/index.html">UKBB</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../slurm/index.html">SLURM</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">CCITK</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Applications</a></li>
+          <li class="breadcrumb-item"><a href="index.html">CMRSegment</a></li>
+          <li class="breadcrumb-item"><a href="pipeline.html">Pipeline</a></li>
+      <li class="breadcrumb-item active">Preprocess</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/app/cmr_segment/preprocess.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-ccitk.cmr_segment.preprocess">
+<span id="preprocess"></span><h1>Preprocess<a class="headerlink" href="#module-ccitk.cmr_segment.preprocess" title="Permalink to this heading"></a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="ccitk.cmr_segment.preprocess.DataPreprocessor">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ccitk.cmr_segment.preprocess.</span></span><span class="sig-name descname"><span class="pre">DataPreprocessor</span></span><a class="headerlink" href="#ccitk.cmr_segment.preprocess.DataPreprocessor" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This module splits the CMR sequence, and then resamples and enlarges each phase.
+It assumes that input subjects are in the following file structure:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>/path/
+    subject1/
+        LVSA.nii.gz
+    subject2/
+        LVSA.nii.gz
+    ...
+</pre></div>
+</div>
+<p>It then generates output in the following structures:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>/path/
+    subject1/
+        contrasted_LVSA.nii.gz          -&gt;  Contrasted CMR sequence image
+        lvsa_ED.nii.gz                  -&gt;  ED phase image
+        lvsa_ES.nii.gz                  -&gt;  ES phase image
+        lvsa_SR_ED.nii.gz               -&gt;  Enlarged ED image
+        lvsa_SR_ES.nii.gz               -&gt;  Enlarged ES image
+        lvsa_SR_ED_resampled.nii.gz     -&gt;  Resampled ED image
+        lvsa_SR_ESs_resampled.nii.gz    -&gt;  Resampled ES image
+
+        gray_phases/
+            lvsa_00.nii.gz              -&gt; Phase 0 image
+            lvsa_01.nii.gz              -&gt; Phase 1 image
+            ...
+        resampled/
+            lvsa_0.nii.gz               -&gt;  Resampled phase 0 image
+            lvsa_1.nii.gz               -&gt;  Resampled phase 1 image
+            ...
+        enlarged/
+            lvsa_0.nii.gz               -&gt;  Enlarged phase 0 image
+            lvsa_1.nii.gz               -&gt;  Enlarged phase 1 image
+            ...
+    subject2/
+        ...
+</pre></div>
+</div>
+<p>To run only the preprocessor, use the following command:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>ccitk-cmr-segment -o /output-dir/ --data-dir /input-dir/
+</pre></div>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="ccitk.cmr_segment.preprocess.DataPreprocessor.enlarge_image">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">enlarge_image</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">image</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../api/common/resource.html#ccitk.common.resource.PhaseImage" title="ccitk.common.resource.PhaseImage"><span class="pre">PhaseImage</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_irtk</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../../api/common/resource.html#ccitk.common.resource.PhaseImage" title="ccitk.common.resource.PhaseImage"><span class="pre">PhaseImage</span></a></span></span><a class="headerlink" href="#ccitk.cmr_segment.preprocess.DataPreprocessor.enlarge_image" title="Permalink to this definition"></a></dt>
+<dd><p>Enlarge nifty image with z=20, value=0</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>image</strong> – phase image resource that points to a path</p></li>
+<li><p><strong>output_path</strong> – output path</p></li>
+<li><p><strong>overwrite</strong> – whether to overwrite output if exists</p></li>
+<li><p><strong>use_irtk</strong> – whether to use irtk or mirtk for enlarging</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>a phase image resource that points to the output path</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ccitk.cmr_segment.preprocess.DataPreprocessor.resample_image">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">resample_image</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">image</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../api/common/resource.html#ccitk.common.resource.PhaseImage" title="ccitk.common.resource.PhaseImage"><span class="pre">PhaseImage</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_irtk</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../../api/common/resource.html#ccitk.common.resource.PhaseImage" title="ccitk.common.resource.PhaseImage"><span class="pre">PhaseImage</span></a></span></span><a class="headerlink" href="#ccitk.cmr_segment.preprocess.DataPreprocessor.resample_image" title="Permalink to this definition"></a></dt>
+<dd><p>Resample nifty image to size 1.25, 1.25, 2</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>image</strong> – phase image resource that points to a path</p></li>
+<li><p><strong>output_path</strong> – output path</p></li>
+<li><p><strong>overwrite</strong> – whether to overwrite output if exists</p></li>
+<li><p><strong>use_irtk</strong> – whether to use irtk or mirtk for resampling</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>a phase image resource that points to the output path</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ccitk.cmr_segment.preprocess.DataPreprocessor.run">
+<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_irtk</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">do_cine</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">do_contrast</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">preprocess_flip</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Iterable</span><span class="p"><span class="pre">[</span></span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../../api/common/resource.html#ccitk.common.resource.PhaseImage" title="ccitk.common.resource.PhaseImage"><span class="pre">PhaseImage</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../../api/common/resource.html#ccitk.common.resource.PhaseImage" title="ccitk.common.resource.PhaseImage"><span class="pre">PhaseImage</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../../api/common/resource.html#ccitk.common.resource.CineImages" title="ccitk.common.resource.CineImages"><span class="pre">CineImages</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Path</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#ccitk.cmr_segment.preprocess.DataPreprocessor.run" title="Permalink to this definition"></a></dt>
+<dd><p>Preprocess each subject subdirectories in data_dir, containing LVSA.nii.gz,
+yielding (enlarged_ed_image, enlarged_es_image, enlarged_cine, cine, subject_output_dir)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data_dir</strong> – directory that contains all the subjects to be processed</p></li>
+<li><p><strong>output_dir</strong> – output directory</p></li>
+<li><p><strong>overwrite</strong> (<em>optional</em>) – whether to overwrite the output if exists</p></li>
+<li><p><strong>use_irtk</strong> (<em>optional</em>) – whether to use irtk or use mirtk to do autocontrast and cardiacphaesdetection</p></li>
+<li><p><strong>do_cine</strong> (<em>optional</em>) – whether to split the volume into each gray phase and to resample and enlarge each one.</p></li>
+<li><p><strong>do_contrast</strong> (<em>optional</em>) – whether to do autocontrast</p></li>
+<li><p><strong>preprocess_flip</strong> (<em>optional</em>) – whether to flip the LVSA.nii.gz image on axis=1. (Useful for RBH data)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A generator that yields a tuple,
+(enlarged_ed_image, enlarged_es_image, enlarged_cine, cine, subject_output_dir)</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="pipeline.html" class="btn btn-neutral float-left" title="Pipeline" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="segment.html" class="btn btn-neutral float-right" title="Segment" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Surui Li.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

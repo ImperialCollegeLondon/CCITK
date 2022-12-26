@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>README &mdash; CCITK  documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/sphinx_highlight.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="prev" title="SLURM" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> CCITK
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../api/index.html">API</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">Applications</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../cmr_segment/index.html">CMRSegment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../ukbb/index.html">UKBB</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">SLURM</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">README</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#introduction">Introduction</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#batch-conf-format">batch.conf format</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#available-machines">Available machines</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#run">Run</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">CCITK</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Applications</a></li>
+          <li class="breadcrumb-item"><a href="index.html">SLURM</a></li>
+      <li class="breadcrumb-item active">README</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/app/slurm/readme.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="readme">
+<h1>README<a class="headerlink" href="#readme" title="Permalink to this heading"></a></h1>
+<section id="introduction">
+<h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this heading"></a></h2>
+<p>This application submits any script to SLURM managed clusters in BioMedia given a user specified
+<code class="docutils literal notranslate"><span class="pre">batch.conf</span></code> file.</p>
+<p>Dependencies:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pyhocon</span>
+<span class="n">numpy</span>
+<span class="n">pandas</span>
+</pre></div>
+</div>
+</section>
+<section id="batch-conf-format">
+<h2>batch.conf format<a class="headerlink" href="#batch-conf-format" title="Permalink to this heading"></a></h2>
+<p>A template of CPU and GPU <code class="docutils literal notranslate"><span class="pre">batch.conf</span></code> is provided in <span class="xref myst">batch.conf</span></p>
+<p>For CPU jobs</p>
+<div class="highlight-hocon notranslate"><div class="highlight"><pre><span></span>batch {
+  job_type = &quot;cpu&quot;
+  job_script_path = &quot;/path-to-.py&quot;
+  job_args = &quot;--input-dir /path-to-input --key value&quot;  # all but --csv-file
+  csv_file = &quot;/path-to-csv-file-to-be-partitioned&quot;
+  partition_csv_dir = &quot;/path-on-shared-drive-to-stored-partitions&quot;
+  venv_activate_path = &quot;/path-to-venv-activate&quot;
+  jobs = [
+    {
+      n_cpu = 32
+      mem = 12288
+      nodelist = &quot;roc01&quot;  # 01 to 16
+    },
+    {
+      n_cpu = 32
+      mem = 12288
+      nodelist = &quot;roc01&quot;  # 01 to 16
+    },
+    {
+      n_cpu = 32
+      mem = 12288
+      nodelist = &quot;roc01&quot;  # 01 to 16
+    }
+  ]
+}
+
+</pre></div>
+</div>
+<p>For GPU jobs</p>
+<div class="highlight-hocon notranslate"><div class="highlight"><pre><span></span>batch {
+  job_type = &quot;gpu&quot;
+  job_script_path = &quot;/path-to-.py&quot;
+  job_args = &quot;--input-dir /path-to-input --key value&quot;  # all but --csv-file
+  csv_file = &quot;/path-to-csv-file-to-be-partitioned&quot;
+  partition_csv_dir = &quot;/path-on-shared-drive-to-stored-partitions&quot;
+  venv_activate_path = &quot;/path-to-venv-activate&quot;
+  jobs = [
+    {
+      n_cpu = 32
+      mem = 12288
+      nodelist = &quot;lory&quot;  # lory 16 x Tesla T4 (16GB), monal03 4 x Tesla P100 (16GB), monal04 4 x Tesla P40 (24GB), monal 05 and 06 10 x Geforce Titan XP (12GB)
+      n_gpu = 1
+    },
+    {
+      n_cpu = 32
+      mem = 12288
+      nodelist = &quot;lory&quot;  # lory 16 x Tesla T4 (16GB), monal03 4 x Tesla P100 (16GB), monal04 4 x Tesla P40 (24GB), monal 05 and 06 10 x Geforce Titan XP (12GB)
+      n_gpu = 1
+    },
+    {
+      n_cpu = 32
+      mem = 12288
+      nodelist = &quot;lory&quot;  # lory 16 x Tesla T4 (16GB), monal03 4 x Tesla P100 (16GB), monal04 4 x Tesla P40 (24GB), monal 05 and 06 10 x Geforce Titan XP (12GB)
+      n_gpu = 1
+    }
+  ]
+}
+
+</pre></div>
+</div>
+</section>
+<section id="available-machines">
+<h2>Available machines<a class="headerlink" href="#available-machines" title="Permalink to this heading"></a></h2>
+<p>These internal BioMedia pages contains details about machine availables:</p>
+<p>https://biomedia.doc.ic.ac.uk/internal/computer-resources/the-slurm-resource-manager/</p>
+<p>https://biomedia.doc.ic.ac.uk/internal/computer-resources/gpu-user-guide/</p>
+<p>For CPU jobs, <code class="docutils literal notranslate"><span class="pre">roc01</span></code> to <code class="docutils literal notranslate"><span class="pre">roc16</span></code>, each has 32 CPUs.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">NODELIST</span>   <span class="n">NODES</span>   <span class="n">PARTITION</span>       <span class="n">STATE</span> <span class="n">CPUS</span>    <span class="n">S</span><span class="p">:</span><span class="n">C</span><span class="p">:</span><span class="n">T</span> <span class="n">MEMORY</span> <span class="n">TMP_DISK</span> <span class="n">WEIGHT</span> <span class="n">AVAIL_FE</span> <span class="n">REASON</span>
+  <span class="n">roc01</span>          <span class="mi">1</span>     <span class="n">roclong</span>        <span class="n">idle</span> <span class="mi">32</span>      <span class="mi">2</span><span class="p">:</span><span class="mi">8</span><span class="p">:</span><span class="mi">2</span> <span class="mi">257000</span>        <span class="mi">0</span>      <span class="mi">1</span>   <span class="p">(</span><span class="n">null</span><span class="p">)</span> <span class="n">none</span>
+  <span class="n">roc02</span>          <span class="mi">1</span>     <span class="n">roclong</span>        <span class="n">idle</span> <span class="mi">32</span>      <span class="mi">2</span><span class="p">:</span><span class="mi">8</span><span class="p">:</span><span class="mi">2</span> <span class="mi">257000</span>        <span class="mi">0</span>      <span class="mi">1</span>   <span class="p">(</span><span class="n">null</span><span class="p">)</span> <span class="n">none</span>
+  <span class="n">roc03</span>          <span class="mi">1</span>     <span class="n">roclong</span>        <span class="n">idle</span> <span class="mi">32</span>      <span class="mi">2</span><span class="p">:</span><span class="mi">8</span><span class="p">:</span><span class="mi">2</span> <span class="mi">257000</span>        <span class="mi">0</span>      <span class="mi">1</span>   <span class="p">(</span><span class="n">null</span><span class="p">)</span> <span class="n">none</span>
+  <span class="n">roc04</span>          <span class="mi">1</span>     <span class="n">roclong</span>        <span class="n">idle</span> <span class="mi">32</span>      <span class="mi">2</span><span class="p">:</span><span class="mi">8</span><span class="p">:</span><span class="mi">2</span> <span class="mi">257000</span>        <span class="mi">0</span>      <span class="mi">1</span>   <span class="p">(</span><span class="n">null</span><span class="p">)</span> <span class="n">none</span>
+  <span class="n">roc05</span>          <span class="mi">1</span>     <span class="n">roclong</span>        <span class="n">idle</span> <span class="mi">32</span>      <span class="mi">2</span><span class="p">:</span><span class="mi">8</span><span class="p">:</span><span class="mi">2</span> <span class="mi">257000</span>        <span class="mi">0</span>      <span class="mi">1</span>   <span class="p">(</span><span class="n">null</span><span class="p">)</span> <span class="n">none</span>
+  <span class="n">roc06</span>          <span class="mi">1</span>     <span class="n">roclong</span>        <span class="n">idle</span> <span class="mi">32</span>      <span class="mi">2</span><span class="p">:</span><span class="mi">8</span><span class="p">:</span><span class="mi">2</span> <span class="mi">257000</span>        <span class="mi">0</span>      <span class="mi">1</span>   <span class="p">(</span><span class="n">null</span><span class="p">)</span> <span class="n">none</span>
+  <span class="n">roc07</span>          <span class="mi">1</span>     <span class="n">roclong</span>        <span class="n">idle</span> <span class="mi">32</span>      <span class="mi">2</span><span class="p">:</span><span class="mi">8</span><span class="p">:</span><span class="mi">2</span> <span class="mi">257000</span>        <span class="mi">0</span>      <span class="mi">1</span>   <span class="p">(</span><span class="n">null</span><span class="p">)</span> <span class="n">none</span>
+  <span class="n">roc08</span>          <span class="mi">1</span>     <span class="n">roclong</span>        <span class="n">idle</span> <span class="mi">32</span>      <span class="mi">2</span><span class="p">:</span><span class="mi">8</span><span class="p">:</span><span class="mi">2</span> <span class="mi">257000</span>        <span class="mi">0</span>      <span class="mi">1</span>   <span class="p">(</span><span class="n">null</span><span class="p">)</span> <span class="n">none</span>
+  <span class="n">roc09</span>          <span class="mi">1</span>     <span class="n">roclong</span>        <span class="n">idle</span> <span class="mi">32</span>      <span class="mi">2</span><span class="p">:</span><span class="mi">8</span><span class="p">:</span><span class="mi">2</span> <span class="mi">257000</span>        <span class="mi">0</span>      <span class="mi">1</span>   <span class="p">(</span><span class="n">null</span><span class="p">)</span> <span class="n">none</span>
+  <span class="n">roc10</span>          <span class="mi">1</span>     <span class="n">roclong</span>        <span class="n">idle</span> <span class="mi">32</span>      <span class="mi">2</span><span class="p">:</span><span class="mi">8</span><span class="p">:</span><span class="mi">2</span> <span class="mi">257000</span>        <span class="mi">0</span>      <span class="mi">1</span>   <span class="p">(</span><span class="n">null</span><span class="p">)</span> <span class="n">none</span>
+  <span class="n">roc11</span>          <span class="mi">1</span>     <span class="n">roclong</span>        <span class="n">idle</span> <span class="mi">32</span>      <span class="mi">2</span><span class="p">:</span><span class="mi">8</span><span class="p">:</span><span class="mi">2</span> <span class="mi">257000</span>        <span class="mi">0</span>      <span class="mi">1</span>   <span class="p">(</span><span class="n">null</span><span class="p">)</span> <span class="n">none</span>
+  <span class="n">roc12</span>          <span class="mi">1</span>     <span class="n">roclong</span>        <span class="n">idle</span> <span class="mi">32</span>      <span class="mi">2</span><span class="p">:</span><span class="mi">8</span><span class="p">:</span><span class="mi">2</span> <span class="mi">257000</span>        <span class="mi">0</span>      <span class="mi">1</span>   <span class="p">(</span><span class="n">null</span><span class="p">)</span> <span class="n">none</span>
+  <span class="n">roc13</span>          <span class="mi">1</span>     <span class="n">roclong</span>        <span class="n">idle</span> <span class="mi">32</span>      <span class="mi">2</span><span class="p">:</span><span class="mi">8</span><span class="p">:</span><span class="mi">2</span> <span class="mi">257000</span>        <span class="mi">0</span>      <span class="mi">1</span>   <span class="p">(</span><span class="n">null</span><span class="p">)</span> <span class="n">none</span>
+  <span class="n">roc14</span>          <span class="mi">1</span>     <span class="n">roclong</span>        <span class="n">idle</span> <span class="mi">32</span>      <span class="mi">2</span><span class="p">:</span><span class="mi">8</span><span class="p">:</span><span class="mi">2</span> <span class="mi">257000</span>        <span class="mi">0</span>      <span class="mi">1</span>   <span class="p">(</span><span class="n">null</span><span class="p">)</span> <span class="n">none</span>
+  <span class="n">roc15</span>          <span class="mi">1</span>     <span class="n">roclong</span>        <span class="n">idle</span> <span class="mi">32</span>      <span class="mi">2</span><span class="p">:</span><span class="mi">8</span><span class="p">:</span><span class="mi">2</span> <span class="mi">257000</span>        <span class="mi">0</span>      <span class="mi">1</span>   <span class="p">(</span><span class="n">null</span><span class="p">)</span> <span class="n">none</span>
+  <span class="n">roc16</span>          <span class="mi">1</span>     <span class="n">roclong</span>        <span class="n">idle</span> <span class="mi">32</span>      <span class="mi">2</span><span class="p">:</span><span class="mi">8</span><span class="p">:</span><span class="mi">2</span> <span class="mi">257000</span>        <span class="mi">0</span>      <span class="mi">1</span>   <span class="p">(</span><span class="n">null</span><span class="p">)</span> <span class="n">none</span>
+</pre></div>
+</div>
+<p>For GPU jobs,</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">NODELIST</span>   <span class="n">NODES</span>   <span class="n">PARTITION</span>       <span class="n">STATE</span> <span class="n">CPUS</span>    <span class="n">S</span><span class="p">:</span><span class="n">C</span><span class="p">:</span><span class="n">T</span> <span class="n">MEMORY</span> <span class="n">TMP_DISK</span> <span class="n">WEIGHT</span> <span class="n">AVAIL_FE</span> <span class="n">REASON</span>
+  <span class="n">lory</span>           <span class="mi">1</span>       <span class="n">gpus</span><span class="o">*</span>       <span class="n">mixed</span> <span class="mi">80</span>     <span class="mi">2</span><span class="p">:</span><span class="mi">20</span><span class="p">:</span><span class="mi">2</span> <span class="mi">380000</span>        <span class="mi">0</span>      <span class="mi">1</span>   <span class="p">(</span><span class="n">null</span><span class="p">)</span> <span class="n">none</span>
+  <span class="n">monal03</span>        <span class="mi">1</span>       <span class="n">gpus</span><span class="o">*</span>        <span class="n">idle</span> <span class="mi">56</span>     <span class="mi">2</span><span class="p">:</span><span class="mi">14</span><span class="p">:</span><span class="mi">2</span> <span class="mi">250000</span>        <span class="mi">0</span>      <span class="mi">1</span>   <span class="p">(</span><span class="n">null</span><span class="p">)</span> <span class="n">none</span>
+  <span class="n">monal04</span>        <span class="mi">1</span>       <span class="n">gpus</span><span class="o">*</span>       <span class="n">mixed</span> <span class="mi">56</span>     <span class="mi">2</span><span class="p">:</span><span class="mi">14</span><span class="p">:</span><span class="mi">2</span> <span class="mi">250000</span>        <span class="mi">0</span>      <span class="mi">1</span>   <span class="p">(</span><span class="n">null</span><span class="p">)</span> <span class="n">none</span>
+  <span class="n">monal05</span>        <span class="mi">1</span>       <span class="n">gpus</span><span class="o">*</span>        <span class="n">idle</span> <span class="mi">56</span>     <span class="mi">2</span><span class="p">:</span><span class="mi">14</span><span class="p">:</span><span class="mi">2</span> <span class="mi">220000</span>        <span class="mi">0</span>      <span class="mi">1</span>   <span class="p">(</span><span class="n">null</span><span class="p">)</span> <span class="n">none</span>
+  <span class="n">monal06</span>        <span class="mi">1</span>       <span class="n">gpus</span><span class="o">*</span>        <span class="n">idle</span> <span class="mi">56</span>     <span class="mi">2</span><span class="p">:</span><span class="mi">14</span><span class="p">:</span><span class="mi">2</span> <span class="mi">250000</span>        <span class="mi">0</span>      <span class="mi">1</span>   <span class="p">(</span><span class="n">null</span><span class="p">)</span> <span class="n">none</span>
+</pre></div>
+</div>
+<section id="lory-tesla-t4">
+<h3>lory (Tesla T4)<a class="headerlink" href="#lory-tesla-t4" title="Permalink to this heading"></a></h3>
+<p>lory features 16 Tesla T4 cards, each with 16 GB. It also has 20T of fast local SSD storage. Use this as scratch storage for copies of input data and intermedate storage. Do not rely on this and always back up important results to /vol/ directories.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">CPU</span><span class="p">:</span> <span class="n">Intel</span><span class="p">(</span><span class="n">R</span><span class="p">)</span> <span class="n">Xeon</span><span class="p">(</span><span class="n">R</span><span class="p">)</span> <span class="n">Gold</span> <span class="mi">6230</span> <span class="n">CPU</span> <span class="o">@</span> <span class="mf">2.10</span><span class="n">GHz</span>
+<span class="n">RAM</span><span class="p">:</span> <span class="mi">12</span> <span class="n">x</span> <span class="n">Samsung</span> <span class="n">M393A4K40CB2</span><span class="o">-</span><span class="n">CTD</span> <span class="p">(</span><span class="mi">384</span><span class="n">GB</span><span class="p">)</span>
+<span class="n">GPU</span><span class="p">:</span> <span class="mi">16</span> <span class="n">x</span> <span class="n">Tesla</span> <span class="n">T4</span> <span class="p">(</span><span class="mi">16</span><span class="n">GB</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="monal03-tesla-p100">
+<h3>monal03 (Tesla P100)<a class="headerlink" href="#monal03-tesla-p100" title="Permalink to this heading"></a></h3>
+<p>monal03 features 4 Tesla P100 cards, each with 16 GB, connected via NVLINK, ideal for multi-GPU computing (i.e. where there is a lot of communication between the GPUs).</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">CPU</span><span class="p">:</span> <span class="n">Intel</span><span class="p">(</span><span class="n">R</span><span class="p">)</span> <span class="n">Xeon</span><span class="p">(</span><span class="n">R</span><span class="p">)</span> <span class="n">CPU</span> <span class="n">E5</span><span class="o">-</span><span class="mi">2660</span> <span class="n">v4</span> <span class="o">@</span> <span class="mf">2.00</span><span class="n">GHz</span>
+<span class="n">RAM</span><span class="p">:</span> <span class="mi">8</span> <span class="n">x</span> <span class="n">Samsung</span> <span class="n">M393A4K40BB1</span><span class="o">-</span><span class="n">CRC</span> <span class="p">(</span><span class="mi">256</span><span class="n">GB</span><span class="p">)</span>
+<span class="n">GPU</span><span class="p">:</span> <span class="mi">4</span> <span class="n">x</span> <span class="n">Tesla</span> <span class="n">P100</span> <span class="p">(</span><span class="mi">16</span><span class="n">GB</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="monal04-tesla-p40">
+<h3>monal04 (Tesla P40)<a class="headerlink" href="#monal04-tesla-p40" title="Permalink to this heading"></a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">CPU</span><span class="p">:</span> <span class="n">Intel</span><span class="p">(</span><span class="n">R</span><span class="p">)</span> <span class="n">Xeon</span><span class="p">(</span><span class="n">R</span><span class="p">)</span> <span class="n">CPU</span> <span class="n">E5</span><span class="o">-</span><span class="mi">2660</span> <span class="n">v4</span> <span class="o">@</span> <span class="mf">2.00</span><span class="n">GHz</span>
+<span class="n">RAM</span><span class="p">:</span> <span class="mi">8</span> <span class="n">x</span> <span class="n">Samsung</span> <span class="n">M393A4K40BB1</span><span class="o">-</span><span class="n">CRC</span> <span class="p">(</span><span class="mi">256</span><span class="n">GB</span><span class="p">)</span>
+<span class="n">GPU</span><span class="p">:</span> <span class="mi">4</span> <span class="n">x</span> <span class="n">Tesla</span> <span class="n">P40</span> <span class="p">(</span><span class="mi">24</span><span class="n">GB</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="monal05-and-monal06-titan-xp">
+<h3>monal05 and monal06 (Titan Xp)<a class="headerlink" href="#monal05-and-monal06-titan-xp" title="Permalink to this heading"></a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">CPU</span><span class="p">:</span> <span class="n">Intel</span><span class="p">(</span><span class="n">R</span><span class="p">)</span> <span class="n">Xeon</span><span class="p">(</span><span class="n">R</span><span class="p">)</span> <span class="n">CPU</span> <span class="n">E5</span><span class="o">-</span><span class="mi">2660</span> <span class="n">v4</span> <span class="o">@</span> <span class="mf">2.00</span><span class="n">GHz</span>
+<span class="n">RAM</span><span class="p">:</span> <span class="mi">8</span> <span class="n">x</span> <span class="n">Micron</span> <span class="mi">36</span><span class="n">ASF4G72PZ</span><span class="o">-</span><span class="mi">2</span><span class="n">G3A1</span> <span class="p">(</span><span class="mi">256</span><span class="n">GB</span><span class="p">)</span>
+<span class="n">GPU</span><span class="p">:</span> <span class="mi">10</span> <span class="n">x</span> <span class="n">Geforce</span> <span class="n">Titan</span> <span class="n">XP</span> <span class="p">(</span><span class="mi">12</span><span class="n">GB</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="run">
+<h2>Run<a class="headerlink" href="#run" title="Permalink to this heading"></a></h2>
+<p>To submit a batch job, after creating a <code class="docutils literal notranslate"><span class="pre">batch.conf</span></code> and specifying the job accordingly, do</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ccitk</span><span class="o">-</span><span class="n">slurm</span><span class="o">-</span><span class="n">submit</span> <span class="o">--</span><span class="n">batch</span><span class="o">-</span><span class="n">conf</span> <span class="o">/</span><span class="n">path</span><span class="o">-</span><span class="n">to</span><span class="o">-</span><span class="n">user</span><span class="o">-</span><span class="n">batch</span><span class="o">-</span><span class="n">conf</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="SLURM" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Surui Li.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

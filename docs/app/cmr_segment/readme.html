@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>README &mdash; CCITK  documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/sphinx_highlight.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="config" href="config.html" />
+    <link rel="prev" title="CMRSegment" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> CCITK
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../api/index.html">API</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">Applications</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">CMRSegment</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">README</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#introduction">Introduction</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#installation">Installation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#modules">Modules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#the-pipeline">The pipeline</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="config.html">config</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pipeline.html">Pipeline</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../ukbb/index.html">UKBB</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../slurm/index.html">SLURM</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">CCITK</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Applications</a></li>
+          <li class="breadcrumb-item"><a href="index.html">CMRSegment</a></li>
+      <li class="breadcrumb-item active">README</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/app/cmr_segment/readme.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="readme">
+<h1>README<a class="headerlink" href="#readme" title="Permalink to this heading"></a></h1>
+<section id="introduction">
+<h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this heading"></a></h2>
+<p>This module refactors and extends the repo of <a class="reference external" href="https://github.com/UK-Digital-Heart-Project/4Dsegment2.0">4Dsegment2.0</a></p>
+<p><code class="docutils literal notranslate"><span class="pre">ccitk-cmr-segment</span></code> is a Cardiac Magnetic Resonance Imaging processing pipeline, consisted of 6 modules, which are in sequence a preprocessor,
+a segmentor, a refiner, an extractor, (a coregister), and a motion tracker.</p>
+</section>
+<section id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this heading"></a></h2>
+<p>To install <code class="docutils literal notranslate"><span class="pre">ccitk-cmr-segment</span></code>, do</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">setup</span><span class="o">.</span><span class="n">py</span> <span class="n">install</span>
+</pre></div>
+</div>
+<p>at <code class="docutils literal notranslate"><span class="pre">CCITK</span></code> root directory.</p>
+<p>It depends on MIRTK. After you have installed MIRTK, you need to add mirtk to pythonpath</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>export PYTHONPATH=$PYTHONPATH:CMAKE_INSTALL_PREFIX/Lib/Python
+</pre></div>
+</div>
+<p>To add mirtk to your virtual environment</p>
+<p>Uses <code class="docutils literal notranslate"><span class="pre">add2virtualenv</span></code> from <code class="docutils literal notranslate"><span class="pre">virtualenvwrapper</span></code>: https://virtualenvwrapper.readthedocs.io/en/latest/command_ref.html#add2virtualenv</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">virutalenvwrapper</span> <span class="p">(</span><span class="n">virtualenvwrapper</span><span class="o">-</span><span class="n">win</span> <span class="k">for</span> <span class="n">windows</span><span class="p">)</span>
+<span class="n">add2virtualenv</span> <span class="n">CMAKE_INSTALL_PREFIX</span><span class="o">/</span><span class="n">Lib</span><span class="o">/</span><span class="n">Python</span>
+</pre></div>
+</div>
+<p>Then you can directly import mirtk in your python script.</p>
+<p>A prebuild docker image is available to use:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>docker pull lisurui6/cmr-sgement:latest
+docker run -ti lisurui6/cmr-segment:latest
+export PYTHONPATH=$PYTHONPATH:/usr/local/lib/mirtk/python
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">docker</span> <span class="n">build</span> <span class="o">-</span><span class="n">t</span> <span class="n">lisurui6</span><span class="o">/</span><span class="n">cmr</span><span class="o">-</span><span class="n">segment</span><span class="p">:</span><span class="n">latest</span> <span class="o">.</span>
+<span class="n">docker</span> <span class="n">push</span> <span class="n">docker</span><span class="o">.</span><span class="n">io</span><span class="o">/</span><span class="n">lisurui6</span><span class="o">/</span><span class="n">cmr</span><span class="o">-</span><span class="n">segment</span><span class="p">:</span><span class="n">latest</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>eval $(ssh-agent -s)
+ssh-add ~/.ssh/id_rsa
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>export PYTHONPATH=$PYTHONPATH:/mirtk/lib/python
+rf -rf PH_atlas
+apt install python3.7
+pip2 uninstall tensorflow
+python3.7 get-pip.py
+pip3.7 install -r requirements.txt
+pip3.7 install tensorflow
+pip3.7 install torch torchvision
+</pre></div>
+</div>
+</section>
+<section id="modules">
+<h2>Modules<a class="headerlink" href="#modules" title="Permalink to this heading"></a></h2>
+<section id="preprocessor">
+<h3>1. Preprocessor<a class="headerlink" href="#preprocessor" title="Permalink to this heading"></a></h3>
+<p>This module splits the CMR sequence, and then resamples and enlarges each phase.
+It assumes that input subjects are in the following file structure:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">/</span><span class="n">path</span><span class="o">/</span>
+    <span class="n">subject1</span><span class="o">/</span>
+        <span class="n">LVSA</span><span class="o">.</span><span class="n">nii</span><span class="o">.</span><span class="n">gz</span>
+    <span class="n">subject2</span><span class="o">/</span>
+        <span class="n">LVSA</span><span class="o">.</span><span class="n">nii</span><span class="o">.</span><span class="n">gz</span>
+    <span class="o">...</span>
+</pre></div>
+</div>
+<p>It then generates output in the following structures:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">/</span><span class="n">path</span><span class="o">/</span>
+    <span class="n">subject1</span><span class="o">/</span>
+        <span class="n">contrasted_LVSA</span><span class="o">.</span><span class="n">nii</span><span class="o">.</span><span class="n">gz</span>          <span class="o">-&gt;</span>  <span class="n">Contrasted</span> <span class="n">CMR</span> <span class="n">sequence</span> <span class="n">image</span>
+        <span class="n">lvsa_ED</span><span class="o">.</span><span class="n">nii</span><span class="o">.</span><span class="n">gz</span>                  <span class="o">-&gt;</span>  <span class="n">ED</span> <span class="n">phase</span> <span class="n">image</span>
+        <span class="n">lvsa_ES</span><span class="o">.</span><span class="n">nii</span><span class="o">.</span><span class="n">gz</span>                  <span class="o">-&gt;</span>  <span class="n">ES</span> <span class="n">phase</span> <span class="n">image</span>
+        <span class="n">lvsa_SR_ED</span><span class="o">.</span><span class="n">nii</span><span class="o">.</span><span class="n">gz</span>               <span class="o">-&gt;</span>  <span class="n">Enlarged</span> <span class="n">ED</span> <span class="n">image</span>
+        <span class="n">lvsa_SR_ES</span><span class="o">.</span><span class="n">nii</span><span class="o">.</span><span class="n">gz</span>               <span class="o">-&gt;</span>  <span class="n">Enlarged</span> <span class="n">ES</span> <span class="n">image</span>
+        <span class="n">lvsa_SR_ED_resampled</span><span class="o">.</span><span class="n">nii</span><span class="o">.</span><span class="n">gz</span>     <span class="o">-&gt;</span>  <span class="n">Resampled</span> <span class="n">ED</span> <span class="n">image</span>
+        <span class="n">lvsa_SR_ESs_resampled</span><span class="o">.</span><span class="n">nii</span><span class="o">.</span><span class="n">gz</span>    <span class="o">-&gt;</span>  <span class="n">Resampled</span> <span class="n">ES</span> <span class="n">image</span>
+        <span class="n">gray_phases</span><span class="o">/</span>
+            <span class="n">lvsa_00</span><span class="o">.</span><span class="n">nii</span><span class="o">.</span><span class="n">gz</span>              <span class="o">-&gt;</span> <span class="n">Phase</span> <span class="mi">0</span> <span class="n">image</span>
+            <span class="n">lvsa_01</span><span class="o">.</span><span class="n">nii</span><span class="o">.</span><span class="n">gz</span>              <span class="o">-&gt;</span> <span class="n">Phase</span> <span class="mi">1</span> <span class="n">image</span>
+            <span class="o">...</span>
+        <span class="n">resampled</span><span class="o">/</span>
+            <span class="n">lvsa_0</span><span class="o">.</span><span class="n">nii</span><span class="o">.</span><span class="n">gz</span>               <span class="o">-&gt;</span>  <span class="n">Resampled</span> <span class="n">phase</span> <span class="mi">0</span> <span class="n">image</span>
+            <span class="n">lvsa_1</span><span class="o">.</span><span class="n">nii</span><span class="o">.</span><span class="n">gz</span>               <span class="o">-&gt;</span>  <span class="n">Resampled</span> <span class="n">phase</span> <span class="mi">1</span> <span class="n">image</span>
+            <span class="o">...</span>
+        <span class="n">enlarged</span><span class="o">/</span>
+            <span class="n">lvsa_0</span><span class="o">.</span><span class="n">nii</span><span class="o">.</span><span class="n">gz</span>               <span class="o">-&gt;</span>  <span class="n">Enlarged</span> <span class="n">phase</span> <span class="mi">0</span> <span class="n">image</span>
+            <span class="n">lvsa_1</span><span class="o">.</span><span class="n">nii</span><span class="o">.</span><span class="n">gz</span>               <span class="o">-&gt;</span>  <span class="n">Enlarged</span> <span class="n">phase</span> <span class="mi">1</span> <span class="n">image</span>
+            <span class="o">...</span>
+    <span class="n">subject2</span><span class="o">/</span>
+        <span class="o">...</span>
+</pre></div>
+</div>
+<p>To run only the preprocessor, use the following command:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ccitk</span><span class="o">-</span><span class="n">cmr</span><span class="o">-</span><span class="n">segment</span> <span class="o">-</span><span class="n">o</span> <span class="o">/</span><span class="n">output</span><span class="o">-</span><span class="nb">dir</span><span class="o">/</span> <span class="o">--</span><span class="n">data</span><span class="o">-</span><span class="nb">dir</span> <span class="o">/</span><span class="nb">input</span><span class="o">-</span><span class="nb">dir</span><span class="o">/</span>
+</pre></div>
+</div>
+</section>
+<section id="segmentor">
+<h3>2. Segmentor<a class="headerlink" href="#segmentor" title="Permalink to this heading"></a></h3>
+<p>This module uses a trained 3D convolutional neural network (UNet) to segment ED/ES enlarged images.
+The code to train the network is in <span class="xref myst"><code class="docutils literal notranslate"><span class="pre">experiments/fcn_3d/</span></code></span></p>
+<p>It takes input</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">/</span><span class="n">path</span><span class="o">/</span>
+    <span class="n">subject1</span><span class="o">/</span>
+        <span class="n">lvsa_SR_ED</span><span class="o">.</span><span class="n">nii</span><span class="o">.</span><span class="n">gz</span>               <span class="o">-&gt;</span>  <span class="n">Enlarged</span> <span class="n">ED</span> <span class="n">image</span>
+        <span class="n">lvsa_SR_ES</span><span class="o">.</span><span class="n">nii</span><span class="o">.</span><span class="n">gz</span>               <span class="o">-&gt;</span>  <span class="n">Enlarged</span> <span class="n">ES</span> <span class="n">image</span>
+        <span class="n">enlarged</span><span class="o">/</span>
+            <span class="n">lvsa_0</span><span class="o">.</span><span class="n">nii</span><span class="o">.</span><span class="n">gz</span>               <span class="o">-&gt;</span>  <span class="n">Enlarged</span> <span class="n">phase</span> <span class="mi">0</span> <span class="n">image</span>
+            <span class="n">lvsa_1</span><span class="o">.</span><span class="n">nii</span><span class="o">.</span><span class="n">gz</span>               <span class="o">-&gt;</span>  <span class="n">Enlarged</span> <span class="n">phase</span> <span class="mi">1</span> <span class="n">image</span>
+            <span class="o">...</span>
+    <span class="n">subject2</span><span class="o">/</span>
+        <span class="o">...</span>
+</pre></div>
+</div>
+<p>and generates output</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">/</span><span class="n">path</span><span class="o">/</span>
+    <span class="n">subject1</span><span class="o">/</span>
+        <span class="n">seg_lvsa_SR_ED</span><span class="o">.</span><span class="n">nii</span><span class="o">.</span><span class="n">gz</span>           <span class="o">-&gt;</span>  <span class="n">ED</span> <span class="n">segmentation</span>
+        <span class="n">seg_lvsa_SR_ES</span><span class="o">.</span><span class="n">nii</span><span class="o">.</span><span class="n">gz</span>           <span class="o">-&gt;</span>  <span class="n">ES</span> <span class="n">segmentation</span>
+        <span class="n">segs</span><span class="o">/</span>
+            <span class="n">lvsa_0</span><span class="o">.</span><span class="n">nii</span><span class="o">.</span><span class="n">gz</span>               <span class="o">-&gt;</span>  <span class="n">Phase</span> <span class="mi">0</span> <span class="n">segmentation</span>
+            <span class="n">lvsa_1</span><span class="o">.</span><span class="n">nii</span><span class="o">.</span><span class="n">gz</span>               <span class="o">-&gt;</span>  <span class="n">Phase</span> <span class="mi">1</span> <span class="n">segmentation</span>
+            <span class="o">...</span>
+        <span class="mi">4</span><span class="n">D_rview</span><span class="o">/</span>
+            <span class="mi">4</span><span class="n">Dimg</span><span class="o">.</span><span class="n">nii</span><span class="o">.</span><span class="n">gz</span>                <span class="o">-&gt;</span>  <span class="mi">4</span><span class="n">D</span> <span class="n">image</span>
+            <span class="mi">4</span><span class="n">Dseg</span><span class="o">.</span><span class="n">nii</span><span class="o">.</span><span class="n">gz</span>                <span class="o">-&gt;</span>  <span class="mi">4</span><span class="n">D</span> <span class="n">segmentation</span>
+    <span class="n">subject2</span><span class="o">/</span>
+        <span class="o">...</span>
+</pre></div>
+</div>
+<p>To run only the segmentor, use the following command:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ccitk</span><span class="o">-</span><span class="n">cmr</span><span class="o">-</span><span class="n">segment</span> <span class="o">-</span><span class="n">o</span> <span class="o">/</span><span class="n">output</span><span class="o">-</span><span class="nb">dir</span><span class="o">/</span> <span class="o">--</span><span class="n">data</span><span class="o">-</span><span class="nb">dir</span> <span class="o">/</span><span class="nb">input</span><span class="o">-</span><span class="nb">dir</span><span class="o">/</span> <span class="o">--</span><span class="n">segment</span> <span class="o">--</span><span class="n">model</span><span class="o">-</span><span class="n">path</span> <span class="o">/</span><span class="n">path</span><span class="o">-</span><span class="n">to</span><span class="o">-</span><span class="n">model</span>
+<span class="o">--</span><span class="n">torch</span> <span class="o">--</span><span class="n">segment</span><span class="o">-</span><span class="n">cine</span>
+</pre></div>
+</div>
+<p>For RBH project, a pretrained model is located at <code class="docutils literal notranslate"><span class="pre">/cardiac/DL_segmentation/IHD_project/DL_models/inference_model.pt</span></code></p>
+</section>
+<section id="refiner">
+<h3>3. Refiner<a class="headerlink" href="#refiner" title="Permalink to this heading"></a></h3>
+<p>Refiner uses registration to refine segmentations generated by the segmentor. For each segmentation, it first finds top
+similar atlases, then registers the segmentation with each atlas, and finally fuses the labels of all transformed atlases
+and outputs as the refined segmentation.</p>
+<p>It takes input from</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">/</span><span class="n">path</span><span class="o">/</span>
+    <span class="n">subject1</span><span class="o">/</span>
+        <span class="n">lvsa_SR_ED</span><span class="o">.</span><span class="n">nii</span><span class="o">.</span><span class="n">gz</span>               <span class="o">-&gt;</span>  <span class="n">Enlarged</span> <span class="n">ED</span> <span class="n">image</span>
+        <span class="n">lvsa_SR_ES</span><span class="o">.</span><span class="n">nii</span><span class="o">.</span><span class="n">gz</span>               <span class="o">-&gt;</span>  <span class="n">Enlarged</span> <span class="n">ES</span> <span class="n">image</span>
+        <span class="n">seg_lvsa_SR_ED</span><span class="o">.</span><span class="n">nii</span><span class="o">.</span><span class="n">gz</span>           <span class="o">-&gt;</span>  <span class="n">ED</span> <span class="n">segmentation</span>
+        <span class="n">seg_lvsa_SR_ES</span><span class="o">.</span><span class="n">nii</span><span class="o">.</span><span class="n">gz</span>           <span class="o">-&gt;</span>  <span class="n">ES</span> <span class="n">segmentation</span>
+        <span class="n">landmark_ED</span><span class="o">.</span><span class="n">vtk</span>                 <span class="o">-&gt;</span>  <span class="n">ED</span> <span class="n">landmarks</span>
+        <span class="n">landmark_ES</span><span class="o">.</span><span class="n">vtk</span>                 <span class="o">-&gt;</span>  <span class="n">ES</span> <span class="n">landmarks</span>
+    <span class="n">subject2</span><span class="o">/</span>
+        <span class="o">...</span>
+</pre></div>
+</div>
+<p>and generates output</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">/</span><span class="n">path</span><span class="o">/</span>
+    <span class="n">subject1</span><span class="o">/</span>
+        <span class="n">refine</span><span class="o">/</span>
+            <span class="n">tmp</span><span class="o">/</span>                                        <span class="o">-&gt;</span>  <span class="n">Temporary</span> <span class="n">files</span>
+            <span class="n">seg_lvsa_SR_ED</span><span class="o">.</span><span class="n">nii_refined</span><span class="o">.</span><span class="n">nii</span><span class="o">.</span><span class="n">gz</span>           <span class="o">-&gt;</span>  <span class="n">Refined</span> <span class="n">ED</span> <span class="n">segmentation</span>
+            <span class="n">seg_lvsa_SR_ES</span><span class="o">.</span><span class="n">nii_refined</span><span class="o">.</span><span class="n">nii</span><span class="o">.</span><span class="n">gz</span>           <span class="o">-&gt;</span>  <span class="n">Refined</span> <span class="n">ES</span> <span class="n">segmentation</span>
+    <span class="n">subject2</span><span class="o">/</span>
+        <span class="o">...</span>
+</pre></div>
+</div>
+<p>To run only the refiner, use the following command:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ccitk</span><span class="o">-</span><span class="n">cmr</span><span class="o">-</span><span class="n">segment</span> <span class="o">-</span><span class="n">o</span> <span class="o">/</span><span class="n">output</span><span class="o">-</span><span class="nb">dir</span><span class="o">/</span> <span class="o">--</span><span class="n">data</span><span class="o">-</span><span class="nb">dir</span> <span class="o">/</span><span class="nb">input</span><span class="o">-</span><span class="nb">dir</span><span class="o">/</span> <span class="o">--</span><span class="n">refine</span> <span class="o">--</span><span class="n">csv</span><span class="o">-</span><span class="n">path</span> <span class="o">/</span><span class="n">path</span><span class="o">-</span><span class="n">to</span><span class="o">-</span><span class="n">csv</span>
+<span class="o">--</span><span class="n">n</span><span class="o">-</span><span class="n">top</span> <span class="mi">7</span> <span class="o">--</span><span class="n">n</span><span class="o">-</span><span class="n">atlas</span> <span class="mi">500</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">--csv-path</span></code> indicates a csv file that contains a list of atlas meshes to use. For RBH project, the csv file is at
+<code class="docutils literal notranslate"><span class="pre">/cardiact/RBH_3D_atlases/3D.csv</span></code></p>
+</section>
+<section id="extractor">
+<h3>4. Extractor<a class="headerlink" href="#extractor" title="Permalink to this heading"></a></h3>
+<p>Extractor extracts 3D triangular mesh from 3D segmentations using marching cubes algorithms.
+It also extracts landmarks.</p>
+<p>It takes input from</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">/</span><span class="n">path</span><span class="o">/</span>
+    <span class="n">subject1</span><span class="o">/</span>
+        <span class="n">seg_lvsa_SR_ED</span><span class="o">.</span><span class="n">nii</span><span class="o">.</span><span class="n">gz</span>           <span class="o">-&gt;</span>  <span class="n">ED</span> <span class="n">segmentation</span>
+        <span class="n">seg_lvsa_SR_ES</span><span class="o">.</span><span class="n">nii</span><span class="o">.</span><span class="n">gz</span>           <span class="o">-&gt;</span>  <span class="n">ES</span> <span class="n">segmentation</span>
+    <span class="n">subject2</span><span class="o">/</span>
+        <span class="o">...</span>
+</pre></div>
+</div>
+<p>or from</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">/</span><span class="n">path</span><span class="o">/</span>
+    <span class="n">subject1</span><span class="o">/</span>
+        <span class="n">refine</span><span class="o">/</span>
+            <span class="n">seg_lvsa_SR_ED</span><span class="o">.</span><span class="n">nii_refined</span><span class="o">.</span><span class="n">nii</span><span class="o">.</span><span class="n">gz</span>       <span class="o">-&gt;</span>  <span class="n">Refined</span> <span class="n">ED</span> <span class="n">segmentation</span>
+            <span class="n">seg_lvsa_SR_ES</span><span class="o">.</span><span class="n">nii_refined</span><span class="o">.</span><span class="n">nii</span><span class="o">.</span><span class="n">gz</span>       <span class="o">-&gt;</span>  <span class="n">Refined</span> <span class="n">ES</span> <span class="n">segmentation</span>
+    <span class="n">subject2</span><span class="o">/</span>
+        <span class="o">...</span>
+</pre></div>
+</div>
+<p>and generates output</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">/</span><span class="n">path</span><span class="o">/</span>
+    <span class="n">subject1</span><span class="o">/</span>
+        <span class="n">landmark_ED</span><span class="o">.</span><span class="n">vtk</span>                 <span class="o">-&gt;</span>  <span class="n">ED</span> <span class="n">landmarks</span>
+        <span class="n">landmark_ES</span><span class="o">.</span><span class="n">vtk</span>                 <span class="o">-&gt;</span>  <span class="n">ES</span> <span class="n">landmarks</span>
+        <span class="n">mesh</span><span class="o">/</span>
+            <span class="n">LVendo_ED</span><span class="o">.</span><span class="n">vtk</span>               <span class="o">-&gt;</span>  <span class="n">LV</span> <span class="n">Endo</span> <span class="n">ED</span> <span class="n">mesh</span>
+            <span class="n">LVendo_ES</span><span class="o">.</span><span class="n">vtk</span>               <span class="o">-&gt;</span>  <span class="n">LV</span> <span class="n">Endo</span> <span class="n">ES</span> <span class="n">mesh</span>
+            <span class="n">LVepi_ED</span><span class="o">.</span><span class="n">vtk</span>                <span class="o">-&gt;</span>  <span class="n">LV</span> <span class="n">Epi</span> <span class="n">ED</span> <span class="n">mesh</span>
+            <span class="n">LVepi_ES</span><span class="o">.</span><span class="n">vtk</span>                <span class="o">-&gt;</span>  <span class="n">LV</span> <span class="n">Epi</span> <span class="n">ES</span> <span class="n">mesh</span>
+            <span class="n">LVmyo_ED</span><span class="o">.</span><span class="n">vtk</span>                <span class="o">-&gt;</span>  <span class="n">LV</span> <span class="n">Myo</span> <span class="n">ED</span> <span class="n">mesh</span>
+            <span class="n">LVmyo_ES</span><span class="o">.</span><span class="n">vtk</span>                <span class="o">-&gt;</span>  <span class="n">LV</span> <span class="n">Myo</span> <span class="n">ES</span> <span class="n">mesh</span>
+            <span class="n">RV_ED</span><span class="o">.</span><span class="n">vtk</span>                   <span class="o">-&gt;</span>  <span class="n">RV</span> <span class="n">ED</span> <span class="n">mesh</span>
+            <span class="n">RV_ES</span><span class="o">.</span><span class="n">vtk</span>                   <span class="o">-&gt;</span>  <span class="n">RV</span> <span class="n">ES</span> <span class="n">mesh</span>
+            <span class="n">RVepi_ED</span><span class="o">.</span><span class="n">vtk</span>                <span class="o">-&gt;</span>  <span class="n">RV</span> <span class="n">Epi</span> <span class="n">ED</span> <span class="n">mesh</span>
+            <span class="n">RVepi_ES</span><span class="o">.</span><span class="n">vtk</span>                <span class="o">-&gt;</span>  <span class="n">RV</span> <span class="n">Epi</span> <span class="n">ES</span> <span class="n">mesh</span>
+    <span class="n">subject2</span><span class="o">/</span>
+        <span class="o">...</span>
+</pre></div>
+</div>
+<p>To run only the extractor, use the following command:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ccitk</span><span class="o">-</span><span class="n">cmr</span><span class="o">-</span><span class="n">segment</span> <span class="o">-</span><span class="n">o</span> <span class="o">/</span><span class="n">output</span><span class="o">-</span><span class="nb">dir</span><span class="o">/</span> <span class="o">--</span><span class="n">data</span><span class="o">-</span><span class="nb">dir</span> <span class="o">/</span><span class="nb">input</span><span class="o">-</span><span class="nb">dir</span><span class="o">/</span> <span class="o">--</span><span class="n">extract</span>
+</pre></div>
+</div>
+</section>
+<section id="coregister">
+<h3>5. Coregister<a class="headerlink" href="#coregister" title="Permalink to this heading"></a></h3>
+<p>Coregister registers each subject’s ED/ES mesh with an atlas and transform each subject to the same atlas space.</p>
+<p>It takes input from</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">/</span><span class="n">path</span><span class="o">/</span>
+    <span class="n">subject1</span><span class="o">/</span>
+        <span class="n">landmark_ED</span><span class="o">.</span><span class="n">vtk</span>                 <span class="o">-&gt;</span>  <span class="n">ED</span> <span class="n">landmarks</span>
+        <span class="n">landmark_ES</span><span class="o">.</span><span class="n">vtk</span>                 <span class="o">-&gt;</span>  <span class="n">ES</span> <span class="n">landmarks</span>
+        <span class="n">mesh</span><span class="o">/</span>
+            <span class="n">LVendo_ED</span><span class="o">.</span><span class="n">vtk</span>               <span class="o">-&gt;</span>  <span class="n">LV</span> <span class="n">Endo</span> <span class="n">ED</span> <span class="n">mesh</span>
+            <span class="n">LVendo_ES</span><span class="o">.</span><span class="n">vtk</span>               <span class="o">-&gt;</span>  <span class="n">LV</span> <span class="n">Endo</span> <span class="n">ES</span> <span class="n">mesh</span>
+            <span class="n">LVepi_ED</span><span class="o">.</span><span class="n">vtk</span>                <span class="o">-&gt;</span>  <span class="n">LV</span> <span class="n">Epi</span> <span class="n">ED</span> <span class="n">mesh</span>
+            <span class="n">LVepi_ES</span><span class="o">.</span><span class="n">vtk</span>                <span class="o">-&gt;</span>  <span class="n">LV</span> <span class="n">Epi</span> <span class="n">ES</span> <span class="n">mesh</span>
+            <span class="n">LVmyo_ED</span><span class="o">.</span><span class="n">vtk</span>                <span class="o">-&gt;</span>  <span class="n">LV</span> <span class="n">Myo</span> <span class="n">ED</span> <span class="n">mesh</span>
+            <span class="n">LVmyo_ES</span><span class="o">.</span><span class="n">vtk</span>                <span class="o">-&gt;</span>  <span class="n">LV</span> <span class="n">Myo</span> <span class="n">ES</span> <span class="n">mesh</span>
+            <span class="n">RV_ED</span><span class="o">.</span><span class="n">vtk</span>                   <span class="o">-&gt;</span>  <span class="n">RV</span> <span class="n">ED</span> <span class="n">mesh</span>
+            <span class="n">RV_ES</span><span class="o">.</span><span class="n">vtk</span>                   <span class="o">-&gt;</span>  <span class="n">RV</span> <span class="n">ES</span> <span class="n">mesh</span>
+            <span class="n">RVepi_ED</span><span class="o">.</span><span class="n">vtk</span>                <span class="o">-&gt;</span>  <span class="n">RV</span> <span class="n">Epi</span> <span class="n">ED</span> <span class="n">mesh</span>
+            <span class="n">RVepi_ES</span><span class="o">.</span><span class="n">vtk</span>                <span class="o">-&gt;</span>  <span class="n">RV</span> <span class="n">Epi</span> <span class="n">ES</span> <span class="n">mesh</span>
+    <span class="n">subject2</span><span class="o">/</span>
+        <span class="o">...</span>
+</pre></div>
+</div>
+<p>and generates output</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">/</span><span class="n">path</span><span class="o">/</span>
+    <span class="n">subject1</span><span class="o">/</span>
+        <span class="n">registration</span><span class="o">/</span>
+            <span class="n">temp</span><span class="o">/</span>                           <span class="o">-&gt;</span>  <span class="n">Temporary</span> <span class="n">files</span>
+            <span class="n">debug</span><span class="o">/</span>                          <span class="o">-&gt;</span>  <span class="n">Intermediate</span> <span class="n">meshes</span>
+            <span class="n">landmarks</span><span class="o">.</span><span class="n">dof</span><span class="o">.</span><span class="n">gz</span>
+            <span class="n">rigid</span><span class="o">/</span>                          <span class="o">-&gt;</span>  <span class="n">Meshes</span> <span class="n">after</span> <span class="n">rigid</span> <span class="n">transformation</span>
+                <span class="n">LVendo_ED</span><span class="o">.</span><span class="n">vtk</span>               <span class="o">-&gt;</span>  <span class="n">LV</span> <span class="n">Endo</span> <span class="n">ED</span> <span class="n">mesh</span>
+                <span class="n">LVendo_ES</span><span class="o">.</span><span class="n">vtk</span>               <span class="o">-&gt;</span>  <span class="n">LV</span> <span class="n">Endo</span> <span class="n">ES</span> <span class="n">mesh</span>
+                <span class="n">LVepi_ED</span><span class="o">.</span><span class="n">vtk</span>                <span class="o">-&gt;</span>  <span class="n">LV</span> <span class="n">Epi</span> <span class="n">ED</span> <span class="n">mesh</span>
+                <span class="n">LVepi_ES</span><span class="o">.</span><span class="n">vtk</span>                <span class="o">-&gt;</span>  <span class="n">LV</span> <span class="n">Epi</span> <span class="n">ES</span> <span class="n">mesh</span>
+                <span class="n">LVmyo_ED</span><span class="o">.</span><span class="n">vtk</span>                <span class="o">-&gt;</span>  <span class="n">LV</span> <span class="n">Myo</span> <span class="n">ED</span> <span class="n">mesh</span>
+                <span class="n">LVmyo_ES</span><span class="o">.</span><span class="n">vtk</span>                <span class="o">-&gt;</span>  <span class="n">LV</span> <span class="n">Myo</span> <span class="n">ES</span> <span class="n">mesh</span>
+                <span class="n">RV_ED</span><span class="o">.</span><span class="n">vtk</span>                   <span class="o">-&gt;</span>  <span class="n">RV</span> <span class="n">ED</span> <span class="n">mesh</span>
+                <span class="n">RV_ES</span><span class="o">.</span><span class="n">vtk</span>                   <span class="o">-&gt;</span>  <span class="n">RV</span> <span class="n">ES</span> <span class="n">mesh</span>
+                <span class="n">RVepi_ED</span><span class="o">.</span><span class="n">vtk</span>                <span class="o">-&gt;</span>  <span class="n">RV</span> <span class="n">Epi</span> <span class="n">ED</span> <span class="n">mesh</span>
+                <span class="n">RVepi_ES</span><span class="o">.</span><span class="n">vtk</span>                <span class="o">-&gt;</span>  <span class="n">RV</span> <span class="n">Epi</span> <span class="n">ES</span> <span class="n">mesh</span>
+            <span class="n">nonrigid</span><span class="o">/</span>                       <span class="o">-&gt;</span> <span class="n">Meshes</span> <span class="n">after</span> <span class="n">nonrigid</span> <span class="n">transformation</span>
+                <span class="n">LVendo_ED</span><span class="o">.</span><span class="n">vtk</span>               <span class="o">-&gt;</span>  <span class="n">LV</span> <span class="n">Endo</span> <span class="n">ED</span> <span class="n">mesh</span>
+                <span class="n">LVendo_ES</span><span class="o">.</span><span class="n">vtk</span>               <span class="o">-&gt;</span>  <span class="n">LV</span> <span class="n">Endo</span> <span class="n">ES</span> <span class="n">mesh</span>
+                <span class="n">LVepi_ED</span><span class="o">.</span><span class="n">vtk</span>                <span class="o">-&gt;</span>  <span class="n">LV</span> <span class="n">Epi</span> <span class="n">ED</span> <span class="n">mesh</span>
+                <span class="n">LVepi_ES</span><span class="o">.</span><span class="n">vtk</span>                <span class="o">-&gt;</span>  <span class="n">LV</span> <span class="n">Epi</span> <span class="n">ES</span> <span class="n">mesh</span>
+                <span class="n">LVmyo_ED</span><span class="o">.</span><span class="n">vtk</span>                <span class="o">-&gt;</span>  <span class="n">LV</span> <span class="n">Myo</span> <span class="n">ED</span> <span class="n">mesh</span>
+                <span class="n">LVmyo_ES</span><span class="o">.</span><span class="n">vtk</span>                <span class="o">-&gt;</span>  <span class="n">LV</span> <span class="n">Myo</span> <span class="n">ES</span> <span class="n">mesh</span>
+                <span class="n">RV_ED</span><span class="o">.</span><span class="n">vtk</span>                   <span class="o">-&gt;</span>  <span class="n">RV</span> <span class="n">ED</span> <span class="n">mesh</span>
+                <span class="n">RV_ES</span><span class="o">.</span><span class="n">vtk</span>                   <span class="o">-&gt;</span>  <span class="n">RV</span> <span class="n">ES</span> <span class="n">mesh</span>
+
+    <span class="n">subject2</span><span class="o">/</span>
+        <span class="o">...</span>
+</pre></div>
+</div>
+<p>To run only the coregister, use the following command:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ccitk</span><span class="o">-</span><span class="n">cmr</span><span class="o">-</span><span class="n">segment</span> <span class="o">-</span><span class="n">o</span> <span class="o">/</span><span class="n">output</span><span class="o">-</span><span class="nb">dir</span><span class="o">/</span> <span class="o">--</span><span class="n">data</span><span class="o">-</span><span class="nb">dir</span> <span class="o">/</span><span class="nb">input</span><span class="o">-</span><span class="nb">dir</span><span class="o">/</span> <span class="o">--</span><span class="n">coregister</span> <span class="o">--</span><span class="n">template</span><span class="o">-</span><span class="nb">dir</span>
+<span class="o">/</span><span class="n">template</span><span class="o">-</span><span class="nb">dir</span> <span class="o">--</span><span class="n">param</span><span class="o">-</span><span class="nb">dir</span> <span class="o">/</span><span class="n">param</span><span class="o">-</span><span class="nb">dir</span>
+</pre></div>
+</div>
+<p>Default template dir is <span class="xref myst"><code class="docutils literal notranslate"><span class="pre">ccitk/cmr_segment/resource/params</span></code></span></p>
+<p>Default param dir is <span class="xref myst"><code class="docutils literal notranslate"><span class="pre">ccitk/cmr_segment/resource/</span></code></span></p>
+</section>
+<section id="motiontracker">
+<h3>6. MotionTracker<a class="headerlink" href="#motiontracker" title="Permalink to this heading"></a></h3>
+<p>Compute motion by averaging forward motion and backward motion,
+transform atlas to subject’s ED mesh in subject space,
+apply motion to the transformed atlas, then register each one back to atlas space.</p>
+<p>It takes input from
+cine: CineImages, ed_segmentation: Segmentation, landmarks: Path, ED_mesh: CardiacMesh,</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">/</span><span class="n">path</span><span class="o">/</span>
+    <span class="n">subject1</span><span class="o">/</span>
+        <span class="n">landmark_ED</span><span class="o">.</span><span class="n">vtk</span>                         <span class="o">-&gt;</span>  <span class="n">ED</span> <span class="n">landmarks</span>
+        <span class="n">refine</span><span class="o">/</span>
+            <span class="n">seg_lvsa_SR_ED</span><span class="o">.</span><span class="n">nii_refined</span><span class="o">.</span><span class="n">nii</span><span class="o">.</span><span class="n">gz</span>   <span class="o">-&gt;</span>  <span class="n">Refined</span> <span class="n">ED</span> <span class="n">segmentation</span>
+        <span class="n">enlarged</span><span class="o">/</span>
+            <span class="n">lvsa_0</span><span class="o">.</span><span class="n">nii</span><span class="o">.</span><span class="n">gz</span>                       <span class="o">-&gt;</span>  <span class="n">Enlarged</span> <span class="n">phase</span> <span class="mi">0</span> <span class="n">image</span>
+            <span class="n">lvsa_1</span><span class="o">.</span><span class="n">nii</span><span class="o">.</span><span class="n">gz</span>                       <span class="o">-&gt;</span>  <span class="n">Enlarged</span> <span class="n">phase</span> <span class="mi">1</span> <span class="n">image</span>
+            <span class="o">...</span>
+        <span class="n">mesh</span><span class="o">/</span>
+            <span class="n">LVendo_ED</span><span class="o">.</span><span class="n">vtk</span>                       <span class="o">-&gt;</span>  <span class="n">LV</span> <span class="n">Endo</span> <span class="n">ED</span> <span class="n">mesh</span>
+            <span class="n">LVepi_ED</span><span class="o">.</span><span class="n">vtk</span>                        <span class="o">-&gt;</span>  <span class="n">LV</span> <span class="n">Epi</span> <span class="n">ED</span> <span class="n">mesh</span>
+            <span class="n">LVmyo_ED</span><span class="o">.</span><span class="n">vtk</span>                        <span class="o">-&gt;</span>  <span class="n">LV</span> <span class="n">Myo</span> <span class="n">ED</span> <span class="n">mesh</span>
+            <span class="n">RV_ED</span><span class="o">.</span><span class="n">vtk</span>                           <span class="o">-&gt;</span>  <span class="n">RV</span> <span class="n">ED</span> <span class="n">mesh</span>
+            <span class="n">RVepi_ED</span><span class="o">.</span><span class="n">vtk</span>                        <span class="o">-&gt;</span>  <span class="n">RV</span> <span class="n">Epi</span> <span class="n">ED</span> <span class="n">mesh</span>
+    <span class="n">subject2</span><span class="o">/</span>
+        <span class="o">...</span>
+</pre></div>
+</div>
+<p>and generates output</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">/</span><span class="n">path</span><span class="o">/</span>
+    <span class="n">subject1</span><span class="o">/</span>
+        <span class="n">motion</span><span class="o">/</span>
+            <span class="n">dof</span><span class="o">/</span>                                        <span class="o">-&gt;</span> <span class="n">motion</span> <span class="n">transformation</span> <span class="n">files</span>
+                <span class="n">ffd_00_to_00</span><span class="o">.</span><span class="n">dof</span><span class="o">.</span><span class="n">gz</span>                     <span class="o">-&gt;</span> <span class="n">avergaed</span><span class="p">,</span> <span class="n">composed</span> <span class="n">motion</span> <span class="kn">from</span> <span class="nn">frame</span> <span class="mi">00</span> <span class="n">to</span> <span class="mi">00</span>
+                <span class="n">ffd_00_to_01</span><span class="o">.</span><span class="n">dof</span><span class="o">.</span><span class="n">gz</span>                     <span class="o">-&gt;</span> <span class="n">avergaed</span><span class="p">,</span> <span class="n">composed</span> <span class="n">motion</span> <span class="kn">from</span> <span class="nn">frame</span> <span class="mi">00</span> <span class="n">to</span> <span class="mi">01</span>
+                <span class="n">ffd_00_to_02</span><span class="o">.</span><span class="n">dof</span><span class="o">.</span><span class="n">gz</span>                     <span class="o">-&gt;</span> <span class="n">avergaed</span><span class="p">,</span> <span class="n">composed</span> <span class="n">motion</span> <span class="kn">from</span> <span class="nn">frame</span> <span class="mi">00</span> <span class="n">to</span> <span class="mi">02</span>
+                <span class="o">...</span>
+                <span class="n">ffd_forward_00_to_01</span><span class="o">.</span><span class="n">dof</span><span class="o">.</span><span class="n">gz</span>             <span class="o">-&gt;</span> <span class="n">forward</span> <span class="n">motion</span> <span class="kn">from</span> <span class="nn">frame</span> <span class="mi">00</span> <span class="n">to</span> <span class="mi">01</span>
+                <span class="n">ffd_forward_01_to_02</span><span class="o">.</span><span class="n">dof</span><span class="o">.</span><span class="n">gz</span>             <span class="o">-&gt;</span> <span class="n">forward</span> <span class="n">motion</span> <span class="kn">from</span> <span class="nn">frame</span> <span class="mi">01</span> <span class="n">to</span> <span class="mi">02</span>
+                <span class="o">...</span>
+                <span class="n">ffd_comp_forward_00_to_02</span><span class="o">.</span><span class="n">dof</span><span class="o">.</span><span class="n">gz</span>        <span class="o">-&gt;</span> <span class="n">forward</span> <span class="n">composed</span> <span class="n">motion</span> <span class="kn">from</span> <span class="nn">frame</span> <span class="mi">00</span> <span class="n">to</span> <span class="mi">02</span>
+                <span class="n">ffd_comp_forward_00_to_03</span><span class="o">.</span><span class="n">dof</span><span class="o">.</span><span class="n">gz</span>        <span class="o">-&gt;</span> <span class="n">forward</span> <span class="n">composed</span> <span class="n">motion</span> <span class="kn">from</span> <span class="nn">frame</span> <span class="mi">00</span> <span class="n">to</span> <span class="mi">03</span>
+                <span class="o">...</span>
+                <span class="n">ffd_backward_00_to_24</span><span class="o">.</span><span class="n">dof</span><span class="o">.</span><span class="n">gz</span>            <span class="o">-&gt;</span> <span class="n">backward</span> <span class="n">motion</span> <span class="kn">from</span> <span class="nn">frame</span> <span class="mi">00</span> <span class="n">to</span> <span class="mi">24</span>
+                <span class="n">ffd_backward_02_to_01</span><span class="o">.</span><span class="n">dof</span><span class="o">.</span><span class="n">gz</span>            <span class="o">-&gt;</span> <span class="n">backward</span> <span class="n">motion</span> <span class="kn">from</span> <span class="nn">frame</span> <span class="mi">02</span> <span class="n">to</span> <span class="mi">01</span>
+                <span class="o">...</span>
+                <span class="n">ffd_comp_backward_00_to_01</span><span class="o">.</span><span class="n">dof</span><span class="o">.</span><span class="n">gz</span>       <span class="o">-&gt;</span> <span class="n">backward</span> <span class="n">composed</span> <span class="n">motion</span> <span class="kn">from</span> <span class="nn">frame</span> <span class="mi">00</span> <span class="n">to</span> <span class="mi">01</span>
+                <span class="n">ffd_comp_backward_00_to_02</span><span class="o">.</span><span class="n">dof</span><span class="o">.</span><span class="n">gz</span>       <span class="o">-&gt;</span> <span class="n">backward</span> <span class="n">composed</span> <span class="n">motion</span> <span class="kn">from</span> <span class="nn">frame</span> <span class="mi">00</span> <span class="n">to</span> <span class="mi">02</span>
+                <span class="o">...</span>
+            <span class="n">register</span><span class="o">/</span>                                   <span class="o">-&gt;</span> <span class="n">Intermediate</span> <span class="n">registration</span> <span class="n">results</span> <span class="n">when</span> <span class="n">transforming</span> <span class="n">atlas</span>
+                                                           <span class="n">to</span> <span class="n">match</span> <span class="n">subject</span> <span class="n">ED</span> <span class="n">mesh</span>
+                <span class="n">lm</span><span class="o">/</span>                                     <span class="o">-&gt;</span> <span class="n">Atlas</span> <span class="n">mesh</span> <span class="n">after</span> <span class="n">registeration</span> <span class="n">using</span> <span class="n">landmarks</span>
+                    <span class="n">mesh</span><span class="o">/</span>
+                        <span class="n">LVendo_ED</span><span class="o">.</span><span class="n">vtk</span>
+                        <span class="n">LVepi_ED</span><span class="o">.</span><span class="n">vtk</span>
+                        <span class="n">LVmyo_ED</span><span class="o">.</span><span class="n">vtk</span>
+                        <span class="n">RV_ED</span><span class="o">.</span><span class="n">vk</span>
+                    <span class="n">landmarks</span><span class="o">.</span><span class="n">dof</span><span class="o">.</span><span class="n">gz</span>
+                <span class="n">rigid</span><span class="o">/</span>                                  <span class="o">-&gt;</span> <span class="n">Atlas</span> <span class="n">mesh</span> <span class="n">after</span> <span class="n">rigid</span> <span class="n">registeration</span>
+                    <span class="n">mesh</span><span class="o">/</span>
+                    <span class="n">lv_rigid_ED</span><span class="o">.</span><span class="n">dof</span><span class="o">.</span><span class="n">gz</span>
+                    <span class="n">rigid_ED</span><span class="o">.</span><span class="n">dof</span><span class="o">.</span><span class="n">gz</span>
+                    <span class="n">rv_rigid_ED</span><span class="o">.</span><span class="n">dof</span><span class="o">.</span><span class="n">gz</span>
+                <span class="n">affine</span><span class="o">/</span>                                 <span class="o">-&gt;</span> <span class="n">Atlas</span> <span class="n">mesh</span> <span class="n">after</span> <span class="n">affine</span> <span class="n">registeration</span>
+                    <span class="n">mesh</span><span class="o">/</span>
+                    <span class="n">rv_affine_ED</span><span class="o">.</span><span class="n">dof</span><span class="o">.</span><span class="n">gz</span>
+                <span class="n">ffd</span><span class="o">/</span>                                    <span class="o">-&gt;</span> <span class="n">Atlas</span> <span class="n">mesh</span> <span class="n">after</span> <span class="n">ffd</span> <span class="n">registeration</span>
+                    <span class="n">mesh</span><span class="o">/</span>
+                    <span class="n">lv_ffd_ED</span><span class="o">.</span><span class="n">dof</span><span class="o">.</span><span class="n">gz</span>
+                    <span class="n">rv_ffd_ED</span><span class="o">.</span><span class="n">dof</span><span class="o">.</span><span class="n">gz</span>
+            <span class="n">seg</span><span class="o">/</span>                                        <span class="o">-&gt;</span> <span class="n">Warped</span> <span class="n">ED</span> <span class="n">label</span> <span class="n">according</span> <span class="n">to</span> <span class="n">motion</span>
+                <span class="n">lvsa_00</span><span class="o">.</span><span class="n">nii</span><span class="o">.</span><span class="n">gz</span>
+                <span class="n">lvsa_01</span><span class="o">.</span><span class="n">nii</span><span class="o">.</span><span class="n">gz</span>
+                <span class="o">...</span>
+            <span class="n">TXT</span><span class="o">/</span>                                        <span class="o">-&gt;</span> <span class="n">motion</span> <span class="n">of</span> <span class="n">transformed</span> <span class="n">atlas</span> <span class="n">mesh</span> <span class="ow">in</span> <span class="n">atlas</span> <span class="n">space</span><span class="p">,</span> <span class="n">txt</span> <span class="nb">format</span>
+                <span class="n">LV_endo</span><span class="o">/</span>
+                    <span class="n">fr00</span><span class="o">.</span><span class="n">txt</span>
+                    <span class="n">fr01</span><span class="o">.</span><span class="n">txt</span>
+                    <span class="o">...</span>
+                <span class="n">LV_epi</span><span class="o">/</span>
+                <span class="n">LV_myo</span><span class="o">/</span>
+                <span class="n">RV</span><span class="o">/</span>
+            <span class="n">VTK</span><span class="o">/</span>                                        <span class="o">-&gt;</span> <span class="n">motion</span> <span class="n">of</span> <span class="n">transformed</span> <span class="n">atlas</span> <span class="n">mesh</span> <span class="ow">in</span> <span class="n">atlas</span> <span class="n">space</span><span class="p">,</span> <span class="n">vtk</span> <span class="nb">format</span>
+                <span class="n">LV_endo</span><span class="o">/</span>
+                    <span class="n">fr00</span><span class="o">.</span><span class="n">vtk</span>
+                    <span class="n">fr01</span><span class="o">.</span><span class="n">vtk</span>
+                    <span class="o">...</span>
+                <span class="n">LV_epi</span><span class="o">/</span>
+                <span class="n">LV_myo</span><span class="o">/</span>
+                <span class="n">RV</span><span class="o">/</span>
+    <span class="n">subject2</span><span class="o">/</span>
+        <span class="o">...</span>
+</pre></div>
+</div>
+<p>To run only the coregister, use the following command:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ccitk</span><span class="o">-</span><span class="n">cmr</span><span class="o">-</span><span class="n">segment</span> <span class="o">-</span><span class="n">o</span> <span class="o">/</span><span class="n">output</span><span class="o">-</span><span class="nb">dir</span><span class="o">/</span> <span class="o">--</span><span class="n">data</span><span class="o">-</span><span class="nb">dir</span> <span class="o">/</span><span class="nb">input</span><span class="o">-</span><span class="nb">dir</span><span class="o">/</span> <span class="o">--</span><span class="n">track</span><span class="o">-</span><span class="n">motion</span> <span class="o">--</span><span class="n">template</span><span class="o">-</span><span class="nb">dir</span> <span class="o">/</span><span class="n">template</span><span class="o">-</span><span class="nb">dir</span>
+<span class="o">--</span><span class="n">param</span><span class="o">-</span><span class="nb">dir</span> <span class="o">/</span><span class="n">param</span><span class="o">-</span><span class="nb">dir</span> <span class="o">--</span><span class="n">ffd</span><span class="o">-</span><span class="n">motion</span><span class="o">-</span><span class="n">cfg</span> <span class="o">/</span><span class="n">path</span><span class="o">-</span><span class="n">to</span><span class="o">-</span><span class="n">cfg</span>
+</pre></div>
+</div>
+<p>Default template dir is <span class="xref myst"><code class="docutils literal notranslate"><span class="pre">ccitk/cmr_segment/resource/params</span></code></span></p>
+<p>Default param dir is <span class="xref myst"><code class="docutils literal notranslate"><span class="pre">ccitk/cmr_segment/resource/</span></code></span></p>
+<p>Default ffd motion cfg is <span class="xref myst"><code class="docutils literal notranslate"><span class="pre">ccitk/cmr_segment/resource/ffd_motion_2.cfg</span></code></span></p>
+</section>
+</section>
+<section id="the-pipeline">
+<h2>The pipeline<a class="headerlink" href="#the-pipeline" title="Permalink to this heading"></a></h2>
+<p>Pipeline links all the above modules together.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ccitk</span><span class="o">-</span><span class="n">cmr</span><span class="o">-</span><span class="n">segment</span> <span class="o">-</span><span class="n">o</span> <span class="o">/</span><span class="n">output</span><span class="o">-</span><span class="nb">dir</span><span class="o">/</span> <span class="o">--</span><span class="n">data</span><span class="o">-</span><span class="nb">dir</span> <span class="o">/</span><span class="nb">input</span><span class="o">-</span><span class="nb">dir</span><span class="o">/</span>
+<span class="p">(</span><span class="k">if</span> <span class="n">you</span> <span class="n">want</span> <span class="n">to</span> <span class="n">flip</span> <span class="ow">in</span> <span class="n">the</span> <span class="n">image</span> <span class="ow">in</span> <span class="n">the</span> <span class="n">axis</span><span class="o">-</span><span class="mi">1</span> <span class="n">direction</span><span class="p">)</span>
+<span class="o">--</span><span class="n">preprocess</span><span class="o">-</span><span class="n">flip</span>
+<span class="p">(</span><span class="k">if</span> <span class="n">you</span> <span class="n">want</span> <span class="n">to</span> <span class="n">run</span> <span class="n">segmentor</span><span class="p">)</span>
+<span class="o">--</span><span class="n">segment</span>
+    <span class="o">--</span><span class="n">model</span><span class="o">-</span><span class="n">path</span> <span class="o">/</span><span class="n">path</span>
+    <span class="o">--</span><span class="n">segment</span><span class="o">-</span><span class="n">cine</span>
+    <span class="o">--</span><span class="n">torch</span>
+<span class="p">(</span><span class="k">if</span> <span class="n">you</span> <span class="n">want</span> <span class="n">to</span> <span class="n">run</span> <span class="n">refiner</span><span class="p">)</span>
+<span class="o">--</span><span class="n">refine</span>
+    <span class="o">--</span><span class="n">csv</span><span class="o">-</span><span class="n">path</span> <span class="o">/</span><span class="n">path</span>
+    <span class="o">--</span><span class="n">n</span><span class="o">-</span><span class="n">top</span> <span class="mi">7</span>
+    <span class="o">--</span><span class="n">n</span><span class="o">-</span><span class="n">atlas</span> <span class="mi">500</span>
+<span class="p">(</span><span class="k">if</span> <span class="n">you</span> <span class="n">want</span> <span class="n">to</span> <span class="n">run</span> <span class="n">extractor</span><span class="p">)</span>
+<span class="o">--</span><span class="n">extract</span>
+    <span class="o">--</span><span class="n">iso</span><span class="o">-</span><span class="n">value</span> <span class="mi">120</span>
+    <span class="o">--</span><span class="n">blur</span> <span class="mi">2</span>
+<span class="p">(</span><span class="k">if</span> <span class="n">you</span> <span class="n">want</span> <span class="n">to</span> <span class="n">run</span> <span class="n">coregister</span><span class="p">)</span>
+<span class="o">--</span><span class="n">coregister</span>
+    <span class="o">--</span><span class="n">template</span><span class="o">-</span><span class="nb">dir</span> <span class="o">/</span><span class="n">path</span>
+    <span class="o">--</span><span class="n">param</span><span class="o">-</span><span class="nb">dir</span> <span class="o">/</span><span class="n">path</span>
+</pre></div>
+</div>
+<p>To see details of these options, look at <code class="docutils literal notranslate"><span class="pre">argument_parser()</span></code> function in the file <span class="xref myst"><code class="docutils literal notranslate"><span class="pre">pipeline/config.py</span></code></span></p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="CMRSegment" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="config.html" class="btn btn-neutral float-right" title="config" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Surui Li.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
