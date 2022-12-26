@@ -28,6 +28,15 @@ from ccitk.common.resource import CardiacMesh
 def register_landmarks(fixed: Path, moving: Path, output_path: Path, use_mirtk: bool = False, overwrite: bool = False):
     """
 
+    Args:
+        fixed:
+        moving:
+        output_path:
+        use_mirtk:
+        overwrite:
+
+    Returns:
+
     """
     if not overwrite and output_path.exists():
         return output_path

@@ -1,12 +1,12 @@
 import torch
-from ccitk.core.nn.torch.data import TorchDataset
-from ccitk.core.nn.torch.data import MultiDataLoader
-from ccitk.core.nn.torch.augmentation import augment
-from ccitk.core.nn.torch import prepare_tensors
+from ccitk.cmr_segment.nn.torch.data import TorchDataset
+from ccitk.cmr_segment.nn.torch.data import MultiDataLoader
+from ccitk.cmr_segment.nn.torch.augmentation import augment
+from ccitk.cmr_segment.nn.torch import prepare_tensors
 
-from ccitk.core.nn.torch.loss import TorchLoss
+from ccitk.cmr_segment.nn.torch.loss import TorchLoss
 from torch.optim.optimizer import Optimizer
-from ccitk.core.common.config import ExperimentConfig
+from ccitk.cmr_segment.common.config import ExperimentConfig
 from tqdm import tqdm
 from typing import Iterable, Tuple, List, Callable
 from torch.utils.tensorboard import SummaryWriter

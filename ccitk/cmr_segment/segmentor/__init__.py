@@ -8,15 +8,59 @@ from ccitk.common.resource import PhaseImage, Segmentation, CineImages
 
 
 class Segmentor:
+    """
+    This module uses a trained 3D convolutional neural network (UNet) to segment ED/ES enlarged images.
+    The code to train the network is in experiments/fcn_3d/
+
+    It takes input
+
+    .. code-block:: text
+
+        /path/
+            subject1/
+                lvsa_SR_ED.nii.gz               ->  Enlarged ED image
+                lvsa_SR_ES.nii.gz               ->  Enlarged ES image
+                enlarged/
+                    lvsa_0.nii.gz               ->  Enlarged phase 0 image
+                    lvsa_1.nii.gz               ->  Enlarged phase 1 image
+                    ...
+            subject2/
+                ...
+    and generates output
+
+    .. code-block:: text
+
+        /path/
+            subject1/
+                seg_lvsa_SR_ED.nii.gz           ->  ED segmentation
+                seg_lvsa_SR_ES.nii.gz           ->  ES segmentation
+                segs/
+                    lvsa_0.nii.gz               ->  Phase 0 segmentation
+                    lvsa_1.nii.gz               ->  Phase 1 segmentation
+                    ...
+                4D_rview/
+                    4Dimg.nii.gz                ->  4D image
+                    4Dseg.nii.gz                ->  4D segmentation
+            subject2/
+                ...
+
+    To run only the segmentor, use the following command:
+
+    .. code-block:: text
+
+        ccitk-cmr-segment -o /output-dir/ --data-dir /input-dir/ --segment --model-path /path-to-model --torch --segment-cine
+
+    """
     def __init__(self, model_path: Path, overwrite: bool = False):
         self.model_path = model_path
         self.overwrite = overwrite
 
     def run(self, image: np.ndarray) -> np.ndarray:
-        """Call sess.run()"""
+        """Process image numpy array and return segmentation as np array"""
         raise NotImplementedError("Must be implemented by subclasses.")
 
     def apply(self, image: PhaseImage, output_path: Path) -> Segmentation:
+        """Apply segmentor to PhaseImage and return Segmentation"""
         np_image, predicted = self.execute(image.path, output_path)
         return Segmentation(phase=image.phase, path=output_path)
 
@@ -26,6 +70,9 @@ class Segmentor:
 
 
 class CineSegmentor:
+    """
+    Use :class:`Segmentor` to segment each phase of the cardiac cycle.
+    """
     def __init__(self, phase_segmentor: Segmentor):
         """ Cine CMR consists in the acquisition of the same slice position at different phases of the cardiac cycle."""
         self.__segmentor = phase_segmentor

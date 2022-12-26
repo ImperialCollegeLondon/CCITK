@@ -16,8 +16,8 @@ author = 'Surui Li'
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
 extensions = [
-    'sphinx.ext.napoleon',
     "myst_parser",
+    'sphinx.ext.napoleon',
 ]
 
 napoleon_google_docstring = True

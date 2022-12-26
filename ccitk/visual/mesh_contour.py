@@ -84,10 +84,22 @@ def visualize_mesh_contour_motion(
         motion_mesh_dir: Path, image_phases_dir: Path, output_dir: Path, slice_numbers: List[int],
         mlab_plot: bool = False, file_prefix: List[str] = None, dofin: Dict = None,
 ):
-    """
+    """For each motion mesh in subject space, slice the mesh at certain z values
+    to find the contours of the 2D slice plane and the mesh boundary surface
+    and construct 2D motions of these contours for each slice.
 
-    params:
-        dofin: Path, if the motion mesh is in atlas space rather than subject space
+    Args:
+        motion_mesh_dir: motion mesh directory
+        image_phases_dir: subject enlarged gray phases directory
+        output_dir: output directory
+        slice_numbers: z values of the images from which to show the contour motion
+        mlab_plot (optional): whether to use mlab to plot (for debug)
+        file_prefix (optional): file prefix for input mesh directory
+        dofin (optional): if the motion mesh is in atlas space rather than subject space,
+                          provide a transformation that maps mesh back to subject space
+
+    Returns:
+
     """
     if file_prefix is None:
         file_prefix = ["LV_endo", "LV_epi", "RV"]

@@ -12,6 +12,9 @@ from ccitk.cmr_segment.segmentor.torch.network import UNet
 
 
 class TorchSegmentor(Segmentor):
+    """
+    Torch implementation of :class:`ccitk.crm_segment.Segmentor`
+    """
     def __init__(self, model_path: Path, overwrite: bool = False, resize_size: Tuple = None, device: int = 0):
         super().__init__(model_path, overwrite)
         self.model = UNet(1, 3, 8).cuda(device)

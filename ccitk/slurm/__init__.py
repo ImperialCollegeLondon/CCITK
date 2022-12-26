@@ -1,8 +1,9 @@
-from pathlib import Path
-from ccitk.slurm.config import CPUBatchJobConfig, GPUBatchJobConfig, BatchJobConfig
-from typing import List
 import os
 import tempfile
+from typing import List
+from pathlib import Path
+
+from ccitk.slurm.config import CPUBatchJobConfig, GPUBatchJobConfig, BatchJobConfig
 
 
 class SlurmBatchJobManager:

@@ -1,5 +1,5 @@
-from .warp_labels import visualize_warped_labels_motion
-from .mesh_contour import visualize_mesh_contour_motion
+from ccitk.visual.warp_labels import visualize_warped_labels_motion
+from ccitk.visual.mesh_contour import visualize_mesh_contour_motion
 from pathlib import Path
 import numpy as np
 

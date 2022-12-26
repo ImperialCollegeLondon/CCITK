@@ -1,9 +1,10 @@
 __all__ = [
     "read_nii_image",
+    "read_nii_label",
+    "normalise_intensity",
     "rescale_intensity",
     "resize_image",
     "resize_label",
-    "read_nii_label",
     "set_affine",
     "split_volume",
     "split_sequence",
@@ -22,11 +23,12 @@ def read_nii_image(path: Path, affine: bool = True) -> Union[Tuple[np.ndarray, n
     """ Read image from a .nii.gz file
 
     Args:
-        path: Path, path of the .nii.gz file
-        affine: bool, whether or not to return an affine matrix
+        path: path of the .nii.gz file
+        affine (optional): whether or not to return an affine matrix
 
     Returns:
-        Image (numpy array) (and affine matrix (4*4) if affine is True)
+        - If affine is False, returns image
+        - If affine is True, returns a tuple, (image, affine)
     """
     nim = nib.load(str(path))
     image = nim.get_data()
@@ -45,12 +47,12 @@ def read_nii_label(label_path: Path, labels: List[int], affine: bool = True) \
 
     Args:
         label_path: path to a .nii.gz file, where the value of each pixel represents the label of that pixel.
-        labels: a list of integers, specifying label values.
-        affine: bool, whether or not to return an affine matrix
+        labels: a list of integers specifying label values.
+        affine (optional): whether or not to return an affine matrix
 
     Returns:
-        Label (numpy array, (n_label, x, y, z)) (and affine matrix (4*4) if affine is True)
-
+        - If affine is False, returns label, with shape (n_label, x, y, z)
+        - If affine is True, returns a tuple, (label, affine)
     """
     label, affine_matrix = read_nii_image(label_path)
     X, Y, Z = label.shape
@@ -68,16 +70,16 @@ def read_nii_label(label_path: Path, labels: List[int], affine: bool = True) \
         return label
 
 
-def rescale_intensity(image: np.ndarray, percentiles: List[float] = None):
+def rescale_intensity(image: np.ndarray, percentiles: List[float] = None) -> np.ndarray:
     """ Rescale the image intensity  to the range of [0, 1], according to percentile or if not provided, min max values.
     If percentiles are provided, then values outside of the percentiles will be set to the values of percentiles.
 
     Args:
-        image: numpy array
-        percentiles: intensity values clip off percentiles, such as (1, 99)
+        image: image data
+        percentiles (optional): intensity values clip off percentiles, such as (1, 99)
 
     Return:
-        Image with rescaled intensity in the range of []
+        Image with rescaled intensity in the range of [0, 1]
     """
     if percentiles is not None:
         val_l, val_h = np.percentile(image, percentiles)
@@ -93,12 +95,13 @@ def rescale_intensity(image: np.ndarray, percentiles: List[float] = None):
     return image2
 
 
-def normalise_intensity(image: np.ndarray, thres_roi=10.0):
+def normalise_intensity(image: np.ndarray, thres_roi: float=10.0) -> np.ndarray:
     """ Normalise the image intensity by the mean and standard deviation
 
     Args:
         image: numpy array
-        thres_roi: default 10.0, threshold percentile, mean and std are computed with values above this percentile
+        thres_roi (optional): default 10.0, threshold percentile,
+                              mean and std are computed with values above this percentile
 
     Return:
         Normalised image
@@ -111,13 +114,13 @@ def normalise_intensity(image: np.ndarray, thres_roi=10.0):
     return image2
 
 
-def resize_image(image: np.ndarray, target_shape: Tuple, order: int = 0):
+def resize_image(image: np.ndarray, target_shape: Tuple, order: int = 0) -> np.ndarray:
     """ Resize nifty image
 
     Args:
         image: numpy array
         target_shape: tuple, such as (x, y, z)
-        order: integer, the order of approximation, default is 0, which is choosing the nearest value.
+        order (optional): integer, the order of approximation, default is 0, which is choosing the nearest value.
 
     Returns:
         Resized image
@@ -128,7 +131,7 @@ def resize_image(image: np.ndarray, target_shape: Tuple, order: int = 0):
     return output
 
 
-def resize_label(label: np.ndarray, target_shape: Tuple):
+def resize_label(label: np.ndarray, target_shape: Tuple) -> np.ndarray:
     """ Resize nifty image
 
     Args:
@@ -216,7 +219,7 @@ def split_sequence(image_name: Union[Path, str], output_name: str):
 
 
 def categorical_dice(prediction: np.ndarray, truth: np.ndarray, k: int, is_one_hot: bool = False,
-                     n_classes: int = None, epsilon: float = 0.001):
+                     n_classes: int = None, epsilon: float = 0.001) -> float:
     """ Dice overlap metric for label k
     prediction and truth can be one-hot encoded or integer encoded.
     If one-hot encoded, they are of the shape (K, D, H, W), or (K, H, W)
@@ -227,9 +230,9 @@ def categorical_dice(prediction: np.ndarray, truth: np.ndarray, k: int, is_one_h
         prediction: numpy array
         truth: numpy array
         k: integer, label k
-        is_one_hot: optional, boolean, if label maps are one-hot encoded
-        n_classes: optional, integer, this is needed if is_one_hot is false
-        epsilon: float, for numerical stability
+        is_one_hot (optional): if label maps are one-hot encoded
+        n_classes (optional): this is needed if is_one_hot is false
+        epsilon (optional): for numerical stability
 
     Returns:
         Dice score, float
@@ -244,7 +247,7 @@ def categorical_dice(prediction: np.ndarray, truth: np.ndarray, k: int, is_one_h
     return 2 * np.sum(A * B) / (np.sum(A) + np.sum(B) + epsilon)
 
 
-def one_hot_encode_label(label: np.ndarray, n_classes: int):
+def one_hot_encode_label(label: np.ndarray, n_classes: int) -> np.ndarray:
     """ Label can be of the shape (D, H, W), or (H, W)
 
     Args:

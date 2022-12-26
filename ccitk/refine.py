@@ -8,6 +8,8 @@ import numpy as np
 from typing import List
 import SimpleITK as sitk
 from pathlib import Path
+from typing import Tuple
+
 from ccitk.image import set_affine
 from ccitk.register import register_landmarks, register_labels_affine
 
@@ -19,8 +21,26 @@ def select_top_similar_atlases(
         atlases_label: List[Path], atlases_landmark: List[Path],
         subject_image: Path, subject_label: Path, subject_landmarks: Path, parin: Path,
         output_dir: Path, n_top: int = 5, overwrite: bool = False
-):
-    """Select top similar atlases, according to subject segmentation and landmark"""
+) -> Tuple[List[Path], List[Path], List[Path]]:
+    """Select top similar atlases, according to subject segmentation and landmark
+
+    Args:
+        atlases_label: list of paths to atlas labels
+        atlases_landmark: list of paths to atlas landmarks
+        subject_image: subject image path
+        subject_label: subject label path
+        subject_landmarks: subject landmarks path
+        parin: affine registration param path
+        output_dir: output directory to store the intermediate results
+        n_top (optional): number of top similar atlases to be selected
+        overwrite (optional): whether to overwrite intermediate results if exist
+
+    Returns:
+        A tuple of three elements, (top_similar_atlases, top_atlas_dofs, top_atlas_landmarks).
+        Each is a list of paths, with length equals n_top.
+
+    """
+
     assert len(atlases_label) == len(atlases_landmark)
     nmi = []
 
@@ -125,6 +145,26 @@ def refine_segmentation_with_atlases(
         subject_image: Path, subject_segmentation: Path, subject_landmarks: Path, phase: str,
         affine_parin: Path, ffd_parin: Path, output_path: Path, n_top: int = 5, overwrite: bool = False,
 ):
+    """
+    Refine segmentation by selecting top similar atlases to the subject and registering each to the subject and using
+    majority voting to fuse the labels.
+
+    Args:
+        atlases_label: list of paths to atlas labels
+        atlases_landmark: list of paths to atlas landmarks
+        subject_image: subject image path
+        subject_segmentation: subject label path
+        subject_landmarks: subject landmark path
+        phase: subject phase, ED or ES
+        affine_parin: affine registration param path
+        ffd_parin: ffd registration param path
+        output_path: output path of the refined segmentation
+        n_top (optional): number of top similar atlases to be selected
+        overwrite (optional): whether to overwrite intermediate results if exist
+
+    Returns:
+        output path of the refined segmentation
+    """
     top_atlases, top_dofs, top_lm = select_top_similar_atlases(
         atlases_label=atlases_label,
         atlases_landmark=atlases_landmark,

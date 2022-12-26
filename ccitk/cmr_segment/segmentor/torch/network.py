@@ -54,6 +54,9 @@ def conv_block_2_3d(in_dim, out_dim, activation, batch_norm: bool = True, group_
 
 
 class UNet(nn.Module):
+    """
+    Torch UNet
+    """
     def __init__(self, in_channels, n_classes, n_filters, batch_norm: bool = True, group_norm=0):
         super(UNet, self).__init__()
 

@@ -23,13 +23,16 @@ def check_labels(seg, labels):
     return flag
 
 
-def extract_simple_landmarks(segmentation: Path, output_path: Path, labels: List = None):
-    # """ Extract landmarks from a LVSA nifti segmentation """
-    # path: working directory
-    # segmentation_filename: name of the segmentation file
-    # landmarks_filename: output landmarks filename
-    # labels: label numbers of the structures on which you want to compute the landmarks
-    # Load the segmentation nifti
+def extract_simple_landmarks(segmentation: Path, output_path: Path, labels: List = None) -> Path:
+    """ Extract landmarks from a LVSA nifti segmentation
+
+    Args:
+        segmentation: Path, segmentation path
+        output_path: Path, output landmarks path
+        labels (optional): label numbers of the structures on which you want to compute the landmarks.
+                           If labels is None, then labels = [2, 3]. Labels is in range 0 to 4, inclusive.
+    """
+
     if labels is None:
         labels = [2, 3]
     nim = nib.load(str(segmentation))

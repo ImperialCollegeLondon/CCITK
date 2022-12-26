@@ -102,7 +102,7 @@ It then generates output in the following structures:
         ...
 ```
 
-To run only the preprocessor, use one of the following commands:
+To run only the preprocessor, use the following command:
 ```
 ccitk-cmr-segment -o /output-dir/ --data-dir /input-dir/
 ```
@@ -140,9 +140,10 @@ and generates output
     subject2/
         ...
 ```
-To run only the segmentor, use one of the following commands:
+To run only the segmentor, use the following command:
 ```
-ccitk-cmr-segment -o /output-dir/ --data-dir /input-dir/ --segment --model-path /path-to-model --torch --segment-cine
+ccitk-cmr-segment -o /output-dir/ --data-dir /input-dir/ --segment --model-path /path-to-model 
+--torch --segment-cine
 ```
 For RBH project, a pretrained model is located at `/cardiac/DL_segmentation/IHD_project/DL_models/inference_model.pt`
 
@@ -156,8 +157,12 @@ It takes input from
 ```
 /path/
     subject1/
+        lvsa_SR_ED.nii.gz               ->  Enlarged ED image
+        lvsa_SR_ES.nii.gz               ->  Enlarged ES image
         seg_lvsa_SR_ED.nii.gz           ->  ED segmentation
         seg_lvsa_SR_ES.nii.gz           ->  ES segmentation
+        landmark_ED.vtk                 ->  ED landmarks
+        landmark_ES.vtk                 ->  ES landmarks
     subject2/
         ...
 ```
@@ -173,9 +178,10 @@ and generates output
         ...
 ```
 
-To run only the refiner, use one of the following commands:
+To run only the refiner, use the following command:
 ```
-ccitk-cmr-segment -o /output-dir/ --data-dir /input-dir/ --refine --csv-path /path-to-csv --n-top 7 --n-atlas 500
+ccitk-cmr-segment -o /output-dir/ --data-dir /input-dir/ --refine --csv-path /path-to-csv 
+--n-top 7 --n-atlas 500
 ```
 
 `--csv-path` indicates a csv file that contains a list of atlas meshes to use. For RBH project, the csv file is at
@@ -224,13 +230,13 @@ and generates output
     subject2/
         ...
 ```
-To run only the extractor, use one of the following commands:
+To run only the extractor, use the following command:
 ```
 ccitk-cmr-segment -o /output-dir/ --data-dir /input-dir/ --extract
 ```
 
 ### 5. Coregister
-Coregister registers each subject mesh with an atlas and transform each subject to the same atlas space. 
+Coregister registers each subject's ED/ES mesh with an atlas and transform each subject to the same atlas space. 
 
 It takes input from
 ```
@@ -275,7 +281,7 @@ and generates output
                 LVendo_ED.vtk               ->  LV Endo ED mesh
                 LVendo_ES.vtk               ->  LV Endo ES mesh
                 LVepi_ED.vtk                ->  LV Epi ED mesh
-                LVepi_ES.vtk  s              ->  LV Epi ES mesh
+                LVepi_ES.vtk                ->  LV Epi ES mesh
                 LVmyo_ED.vtk                ->  LV Myo ED mesh
                 LVmyo_ES.vtk                ->  LV Myo ES mesh
                 RV_ED.vtk                   ->  RV ED mesh
@@ -284,15 +290,122 @@ and generates output
     subject2/
         ...
 ```
-To run only the coregister, use one of the following commands:
+To run only the coregister, use the following command:
 ```
-ccitk-cmr-segment -o /output-dir/ --data-dir /input-dir/ --coregister --template-dir /template-dir --param-dir /param-dir
+ccitk-cmr-segment -o /output-dir/ --data-dir /input-dir/ --coregister --template-dir 
+/template-dir --param-dir /param-dir
 ```
 
 Default template dir is [`ccitk/cmr_segment/resource/params`](ccitk/cmr_segment/resource/params)
 
 Default param dir is [`ccitk/cmr_segment/resource/`](ccitk/cmr_segment/resource/)
 
+
+### 6. MotionTracker
+Compute motion by averaging forward motion and backward motion, 
+transform atlas to subject's ED mesh in subject space, 
+apply motion to the transformed atlas, then register each one back to atlas space. 
+
+It takes input from
+ cine: CineImages, ed_segmentation: Segmentation, landmarks: Path, ED_mesh: CardiacMesh,
+```
+/path/
+    subject1/
+        landmark_ED.vtk                         ->  ED landmarks
+        refine/
+            seg_lvsa_SR_ED.nii_refined.nii.gz   ->  Refined ED segmentation
+        enlarged/
+            lvsa_0.nii.gz                       ->  Enlarged phase 0 image
+            lvsa_1.nii.gz                       ->  Enlarged phase 1 image
+            ...
+        mesh/
+            LVendo_ED.vtk                       ->  LV Endo ED mesh
+            LVepi_ED.vtk                        ->  LV Epi ED mesh
+            LVmyo_ED.vtk                        ->  LV Myo ED mesh
+            RV_ED.vtk                           ->  RV ED mesh
+            RVepi_ED.vtk                        ->  RV Epi ED mesh
+    subject2/
+        ...
+```
+and generates output
+```
+/path/
+    subject1/
+        motion/
+            dof/                                        -> motion transformation files
+                ffd_00_to_00.dof.gz                     -> avergaed, composed motion from frame 00 to 00
+                ffd_00_to_01.dof.gz                     -> avergaed, composed motion from frame 00 to 01
+                ffd_00_to_02.dof.gz                     -> avergaed, composed motion from frame 00 to 02
+                ...
+                ffd_forward_00_to_01.dof.gz             -> forward motion from frame 00 to 01
+                ffd_forward_01_to_02.dof.gz             -> forward motion from frame 01 to 02
+                ...
+                ffd_comp_forward_00_to_02.dof.gz        -> forward composed motion from frame 00 to 02
+                ffd_comp_forward_00_to_03.dof.gz        -> forward composed motion from frame 00 to 03
+                ...
+                ffd_backward_00_to_24.dof.gz            -> backward motion from frame 00 to 24
+                ffd_backward_02_to_01.dof.gz            -> backward motion from frame 02 to 01
+                ...
+                ffd_comp_backward_00_to_01.dof.gz       -> backward composed motion from frame 00 to 01
+                ffd_comp_backward_00_to_02.dof.gz       -> backward composed motion from frame 00 to 02
+                ...
+            register/                                   -> Intermediate registration results when transforming atlas 
+                                                           to match subject ED mesh
+                lm/                                     -> Atlas mesh after registeration using landmarks
+                    mesh/
+                        LVendo_ED.vtk
+                        LVepi_ED.vtk
+                        LVmyo_ED.vtk
+                        RV_ED.vk
+                    landmarks.dof.gz
+                rigid/                                  -> Atlas mesh after rigid registeration 
+                    mesh/
+                    lv_rigid_ED.dof.gz
+                    rigid_ED.dof.gz
+                    rv_rigid_ED.dof.gz
+                affine/                                 -> Atlas mesh after affine registeration 
+                    mesh/
+                    rv_affine_ED.dof.gz
+                ffd/                                    -> Atlas mesh after ffd registeration 
+                    mesh/
+                    lv_ffd_ED.dof.gz
+                    rv_ffd_ED.dof.gz
+            seg/                                        -> Warped ED label according to motion
+                lvsa_00.nii.gz
+                lvsa_01.nii.gz
+                ...
+            TXT/                                        -> motion of transformed atlas mesh in atlas space, txt format
+                LV_endo/
+                    fr00.txt
+                    fr01.txt
+                    ...
+                LV_epi/
+                LV_myo/
+                RV/
+            VTK/                                        -> motion of transformed atlas mesh in atlas space, vtk format
+                LV_endo/
+                    fr00.vtk
+                    fr01.vtk
+                    ...
+                LV_epi/
+                LV_myo/
+                RV/
+    subject2/
+        ...
+```
+
+To run only the coregister, use the following command:
+
+```
+ccitk-cmr-segment -o /output-dir/ --data-dir /input-dir/ --track-motion --template-dir /template-dir 
+--param-dir /param-dir --ffd-motion-cfg /path-to-cfg
+```
+
+Default template dir is [`ccitk/cmr_segment/resource/params`](ccitk/cmr_segment/resource/params)
+
+Default param dir is [`ccitk/cmr_segment/resource/`](ccitk/cmr_segment/resource/)
+
+Default ffd motion cfg is [`ccitk/cmr_segment/resource/ffd_motion_2.cfg`](ccitk/cmr_segment/resource/ffd_motion_2.cfg)
 
 ## The pipeline
 

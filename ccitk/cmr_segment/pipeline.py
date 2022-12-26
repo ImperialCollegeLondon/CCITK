@@ -14,10 +14,28 @@ from ccitk.image import set_affine
 
 
 class CMRPipeline:
+    """
+    CMRSegment processing pipeline
+    """
     def __init__(self, config: PipelineConfig):
         self.config = config
 
     def run(self, data_dir: Path):
+        """
+        Run :class:`~ccitk.cmr_segment.preprocess.DataPreprocessor` -> :class:`~ccitk.cmr_segment.segmentor.Segmentor` ->
+        :func:`~ccitk.landmark.extract_simple_landmarks` -> :class:`~ccitk.cmr_segment.refine.SegmentationRefiner` ->
+        :func:`~ccitk.landmark.extract_simple_landmarks`-> :class:`~ccitk.cmr_segment.mesh.MeshExtractor` ->
+        (:class:`~ccitk.cmr_segment.register.Coregister`) -> :class:`~ccitk.cmr_segment.motion.MotionTracker`.
+
+        The pipeline can be run using only part of the modules, and this is set by the config.
+
+        Args:
+            data_dir: directory that contains subdirectories, where each one containing at least LVSA.nii.gz
+                      is a subject to be processed.
+
+        Returns:
+            None
+        """
         preprocessor = DataPreprocessor()
         if self.config.extract:
             mesh_extractor = MeshExtractor(

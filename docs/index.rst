@@ -6,10 +6,15 @@
 Welcome to CCITK's documentation!
 =================================
 
+Computational Cardiac Imaging Toolkit (CCITK) is a collection of python functions and applications for
+cardiac image processing, developed by BioMedIA group and Computational Cardiac Imaging group.
+
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
 
+   api/index
+   app/index
 
 
 Indices and tables
@@ -19,6 +24,9 @@ Indices and tables
 * :ref:`modindex`
 * :ref:`search`
 
+
+README
+======
+
 .. include:: ../README.md
    :parser: myst_parser.sphinx_
-

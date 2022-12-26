@@ -1,3 +1,7 @@
+__all__ = [
+    "PipelineConfig",
+]
+
 import dataclasses
 from pathlib import Path
 from argparse import ArgumentParser
@@ -67,6 +71,33 @@ class MotionTrackerConfig(PipelineModuleConfig):
 
 
 class PipelineConfig:
+    """
+    Dataclass config for the pipeline
+
+    Args:
+        segment: whether to do segmentation
+        refine: whether to do segmentation refinement
+        extract: whether to do mesh extraction
+        coregister: whether to do coregistration
+        track_motion: whether to do motion tracking
+        output_dir: output directory
+        overwrite: whether to overwrite outputs if exist
+        do_cine (optional): whether to process cine images or just ED/ES
+        preprocess_flip (optional): whether to flip the image along axis=1 in preprocessing
+        model_path (optional): model path for segmentation
+        torch (optional): whether to use torch for segmentation
+        device (optional): device to store the network, gpu or cpu
+        refine_csv_path (optional): csv path that points to atlas locations for refinement
+        refine_n_top (optional): number of top similar atlases for refinement
+        refine_n_atlas (optional): number of atlases for refinement
+        refine_is_lr_seg (optional): whether the segmentation is low resolution, in which case the segmentation would be enlarged.
+        iso_value (optional): iso value for mesh extration
+        blur (optional): blue value
+        param_dir (optional): param directory
+        template_dir (optional): template directory
+        ffd_motion_cfg (optional): ffd motion cfg path
+        use_irtk (optional): whether to use irtk or mirtk in preprocessing
+    """
     def __init__(
         self,
         segment: bool,
@@ -148,6 +179,37 @@ class PipelineConfig:
 
     @staticmethod
     def argument_parser() -> ArgumentParser:
+        """
+        Construct a command line argument parser that contains command line args as below:
+
+        .. code-block:: text
+
+            -o /output-dir/ --data-dir /input-dir/
+            (if you want to flip in the image in the axis-1 direction)
+            --preprocess-flip
+            (if you want to run segmentor)
+            --segment
+                --model-path /path
+                --segment-cine
+                --torch
+            (if you want to run refiner)
+            --refine
+                --csv-path /path
+                --n-top 7
+                --n-atlas 500
+            (if you want to run extractor)
+            --extract
+                --iso-value 120
+                --blur 2
+            (if you want to run coregister)
+            --coregister
+                --template-dir /path
+                --param-dir /path
+            (if you want to run motion tracking)
+            --track-motion
+
+
+        """
         parser = ArgumentParser()
         parser.add_argument("-o", "--output-dir", dest="output_dir", required=True, type=str)
         parser.add_argument("--overwrite", dest="overwrite", action="store_true")
@@ -205,6 +267,16 @@ class PipelineConfig:
 
     @classmethod
     def from_args(cls, args):
+        """
+        Construct the pipeline config from parsed command line args
+
+        Args:
+            args (Namespace): return of parser.parse_args()
+
+        Returns:
+            pipeline config
+
+        """
         return cls(
             segment=args.segment,
             refine=args.refine,

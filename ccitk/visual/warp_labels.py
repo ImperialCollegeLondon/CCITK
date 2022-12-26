@@ -11,6 +11,18 @@ from typing import List
 
 
 def visualize_warped_labels_motion(image_frames_dir: Path, seg_phases_dir: Path, output_dir: Path, slice_numbers: List[int]):
+    """
+    Visualize the warped label and overlay them on the image frame
+
+    Args:
+        image_frames_dir: image frames directory
+        seg_phases_dir: warped label directory, produced by :func::`ccitk.motion.warp_label`
+        output_dir: output directory
+        slice_numbers: slice z values for visualising
+
+    Returns:
+
+    """
 
     frames = [file for file in os.listdir(str(image_frames_dir)) if file.endswith(".nii.gz")]
     seg_frames = [file for file in os.listdir(str(seg_phases_dir)) if file.endswith(".nii.gz")]

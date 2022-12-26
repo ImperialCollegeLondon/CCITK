@@ -1,12 +1,16 @@
 import os
-from pathlib import Path
-from typing import List, Union
-from enum import Enum
 import numpy as np
+from enum import Enum
 import nibabel as nib
+from pathlib import Path
+
+from typing import List, Union
 
 
 class Phase(Enum):
+    """
+    Enum for indicating cardica phases, ED or ES
+    """
     ED = "ED"
     ES = "ES"
 
@@ -15,6 +19,9 @@ class Phase(Enum):
 
 
 class Resource:
+    """
+    Resource base class, a wrapper around pathlib.Path
+    """
     def __init__(self, path: Path):
         self.path = path
 
@@ -33,6 +40,9 @@ class Resource:
 
 
 class RVMesh:
+    """
+    RV Mesh, containing meshes blood pool (rv) and epicardium (optional)
+    """
     def __init__(self, rv: Path, epicardium: Path = None):
         self.rv = rv
         self.epicardium = epicardium
@@ -54,6 +64,9 @@ class RVMesh:
 
 
 class LVMesh:
+    """
+    LV Mesh, containing three meshes, epicardium, endocardium, and myocardium
+    """
     def __init__(self, epicardium: Path, endocardium: Path, myocardium: Path):
         self.epicardium = epicardium
         self.endocardium = endocardium
@@ -81,6 +94,9 @@ class LVMesh:
 
 
 class CardiacMesh:
+    """
+    Mesh for the whole heart, containing lv mesh and rv mesh
+    """
     def __init__(self, rv: RVMesh, lv: LVMesh, phase: Union[Phase, str, int]):
         self.rv = rv
         self.lv = lv
@@ -105,6 +121,9 @@ class CardiacMesh:
 
 
 class ImageResource(Resource):
+    """
+
+    """
     def get_data(self) -> np.ndarray:
         nim = nib.load(str(self.path))
         seg = nim.get_data()
@@ -112,6 +131,9 @@ class ImageResource(Resource):
 
 
 class Segmentation(ImageResource):
+    """
+
+    """
     def __init__(self, path: Path, phase: Union[Phase, str, int]):
         self.path = path
         self.phase = phase
@@ -119,6 +141,9 @@ class Segmentation(ImageResource):
 
 
 class NiiData(ImageResource):
+    """
+
+    """
     @classmethod
     def from_dir(cls, dir: Path):
         assert dir.is_dir(), "{} is not a directory.".format(str(dir))
@@ -127,6 +152,9 @@ class NiiData(ImageResource):
 
 
 class PhaseImage(ImageResource):
+    """
+
+    """
     def __init__(self, path: Path, phase: Union[Phase, int]):
         self.path = path
         self.phase = phase
@@ -151,6 +179,9 @@ class PhaseImage(ImageResource):
 
 
 class CineImages:
+    """
+
+    """
     def __init__(self, images: List[PhaseImage]):
         self.images = images
 

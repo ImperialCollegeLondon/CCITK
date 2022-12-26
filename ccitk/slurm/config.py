@@ -1,6 +1,6 @@
 import dataclasses
-from dataclasses import field
 from pathlib import Path
+from dataclasses import field
 
 
 @dataclasses.dataclass

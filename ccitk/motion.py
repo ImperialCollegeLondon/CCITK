@@ -6,7 +6,7 @@ __all__ = [
     "mesh_motion",
     "phase_mesh_motion",
 ]
-
+import os
 import shutil
 
 import mirtk
@@ -16,7 +16,18 @@ from tqdm import tqdm
 from ccitk.common.resource import CardiacMesh
 
 
-def warp_label(reference_label: Path, output_path: Path, dofin: Path, invert: bool = False):
+def warp_label(reference_label: Path, output_path: Path, dofin: Path, invert: bool = False) -> Path:
+    """Transform label according to input transformation
+
+    Args:
+        reference_label: path to label
+        output_path: output path
+        dofin: input transformation path
+        invert (optional): whether to invert the transformation
+
+    Returns:
+        output path
+    """
     kwargs = {}
     if invert:
         kwargs["invert"] = None
@@ -32,9 +43,18 @@ def warp_label(reference_label: Path, output_path: Path, dofin: Path, invert: bo
 
 def forward_motion(images: List[Path], output_dir: Path, parin: Path, compose_spacing: int = 10,
                    overwrite: bool = False) -> List[Path]:
-    """
-        Return:
-            list of motion, ordering from 00 to 01, to 00 to N, where N is the number of the last frame.
+    """Compute the forward motion of a list of images
+
+    Args:
+        images: a sequence of images, in order according to time
+        output_dir: output directory
+        parin: registration param path
+        compose_spacing (optional): space when composing dofs
+        overwrite (optional): whether to overwrite if output exists
+
+    Returns:
+        list of motion, ordering from 00 to 01, to 00 to N, where N is the number of the last frame.
+
     """
     assert output_dir.is_dir()
     forward_dofs = []
@@ -72,10 +92,19 @@ def forward_motion(images: List[Path], output_dir: Path, parin: Path, compose_sp
 
 def backward_motion(images: List[Path], output_dir: Path, parin: Path, compose_spacing: int = 10,
                     overwrite: bool = False) -> List[Path]:
+    """Compute the backward motion of a list of images
+
+    Args:
+        images: a sequence of images, in order according to time
+        output_dir: output directory
+        parin: registration param path
+        compose_spacing (optional): space when composing dofs
+        overwrite (optional): whether to overwrite if output exists
+
+    Returns:
+        list of motion, ordering from 00 to 01, to 00 to N, where N is the number of the last frame.
     """
-        Return:
-            list of motion, ordering from 00 to 01, to 00 to N, where N is the number of the last frame.
-    """
+
     # Backward image registration
     backward_dofs = {}
     for fr in tqdm(range(len(images) - 1, 0, -1)):
@@ -113,8 +142,23 @@ def backward_motion(images: List[Path], output_dir: Path, parin: Path, compose_s
 
 def average_forward_backward_motion(
         forward_compose_dofs: List[Path], backward_compose_dofs: List[Path],
-        output_dir: Path, overwrite: bool = False
+        output_dir: Path, use_mirtk: bool = True, overwrite: bool = False,
 ) -> List[Path]:
+    """Average the forward motion and the backward motion. This requires average_3d_ffd
+
+    Args:
+        forward_compose_dofs: forward motion, list of dofs
+        backward_compose_dofs: backward motion, list of dofs, same order as forward, 00 to 0k
+        output_dir: output directory
+        use_mirtk (optional): whether to use mirtk for average_3d_ffd. Notice that this means using a special built of mirtk
+        overwrite (optional): whether to overwrite the output if exists.
+
+    Returns:
+        list of motion, ordering from 00 to 01, to 00 to N, where N is the number of the last frame.
+
+    TODO:
+        average_3d_ffd is not in mirtk, and should provide an option to use sys average_3d_ffd
+    """
     assert len(forward_compose_dofs) == len(backward_compose_dofs)
     combine_dofs = []
     cine_length = len(forward_compose_dofs) + 1
@@ -126,21 +170,42 @@ def average_forward_backward_motion(
         dof_combine = output_dir.joinpath("ffd_00_to_{:02d}.dof.gz".format(fr))
 
         if not dof_combine.exists() or overwrite:
-            mirtk.average_3d_ffd(
-                "2",
-                str(dof_forward),
-                weight_forward,
-                str(dof_backward),
-                weight_backward,
-                str(dof_combine),
-                verbose=None,
-            )
+            if use_mirtk:
+                mirtk.average_3d_ffd(
+                    "2",
+                    str(dof_forward),
+                    weight_forward,
+                    str(dof_backward),
+                    weight_backward,
+                    str(dof_combine),
+                    verbose=None,
+                )
+            else:
+                os.system('average_3d_ffd 2 {0} {1} {2} {3} {4}'.format(
+                    str(dof_forward),
+                    weight_forward,
+                    str(dof_backward),
+                    weight_backward,
+                    str(dof_combine)
+                ))
         combine_dofs.append(dof_combine)
     return combine_dofs
 
 
 def mesh_motion(reference_mesh: Path, motion_dofs: List[Path], output_dir: Path,
                 file_prefix: str = "fr", overwrite: bool = False) -> List[Path]:
+    """Apply motion dofs to a mesh (single)
+
+    Args:
+        reference_mesh: path to a vtk mesh
+        motion_dofs: list of motions
+        output_dir: output directory to store the resulting meshes in motion
+        file_prefix (optional): filename prefix to save, filename format prefix_0x.vtk
+        overwrite (optional): whether overwrite outputs if exist.
+
+    Returns:
+        list of resulting meshes in motion
+    """
     output_dir.mkdir(parents=True, exist_ok=True)
     vtks = [reference_mesh]
     vtk = output_dir.joinpath("{}{:02d}.vtk".format(file_prefix, 0))
@@ -162,6 +227,18 @@ def phase_mesh_motion(
         reference_mesh: CardiacMesh, motion_dofs: List[Path], output_dir: Path,
         file_prefix: str = "fr", overwrite: bool = False
 ):
+    """Apply motion dofs to a cardia mesh (contains lv meshes and rv mesh)
+
+    Args:
+        reference_mesh: contains meshes of the whole heart on a time step.
+        motion_dofs: list of motions
+        output_dir: output directory to store the resulting cardiac meshes in motion
+        file_prefix (optional): filename prefix to save, filename format prefix_0x.vtk
+        overwrite (optional): whether overwrite outputs if exist.
+
+    Returns:
+        list of resulting cardiac meshes in motion
+    """
     lv_endo_vtks = mesh_motion(
         reference_mesh=reference_mesh.lv.endocardium,
         motion_dofs=motion_dofs,

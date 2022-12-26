@@ -6,7 +6,6 @@ __all__ = [
 ]
 
 import vtk
-import shutil
 import numpy as np
 from pathlib import Path
 from vtk.util.numpy_support import vtk_to_numpy
@@ -15,13 +14,14 @@ from typing import Tuple, List
 
 def read_vkt_mesh(vtk_path: Path, affine: np.ndarray = None) -> Tuple[np.ndarray, np.ndarray]:
     """
-
+    Read VTk mesh, and apply affine transformation if provided
     Args:
-        vtk_path:
-        affine:
+        vtk_path: mesh vtk path
+        affine (optional): affine transformation matrix (4 x 4)
 
     Returns:
-        vertices, triangles
+        A tuple, (vertices, triangles)
+        vertices has shape (N1, 3), and triangles has shape (N2, 3), where each value is an index of the vertices array.
     """
     reader = vtk.vtkPolyDataReader()
     reader.SetFileName(str(vtk_path))
@@ -43,11 +43,16 @@ def read_vkt_mesh(vtk_path: Path, affine: np.ndarray = None) -> Tuple[np.ndarray
 def surface_mesh_to_volumetric_mesh(vertices: np.ndarray, triangles: np.ndarray, plot: bool = False) \
         -> Tuple[np.ndarray, np.ndarray]:
     """
+    Transform surface mesh to volumetric mesh. pyvista and tetgen library required.
+    Args:
+        vertices: an array of 3D points, (N1, 3)
+        triangles: list of indices of vertices array, (N2, 3)
+        plot (optional): whether to plot the result
 
-    :param vertices:
-    :param triangles:
-    :param plot:
-    :return: vertices, tetrahedrons
+    Returns:
+        A tuple, (nodes, tetras).
+        nodes is an array of points (N1, 3), and tetras is an array of indices (N3, 4)
+
     """
     import pyvista as pv
     import tetgen
@@ -68,15 +73,18 @@ def surface_mesh_to_volumetric_mesh(vertices: np.ndarray, triangles: np.ndarray,
 
 
 def decimate_mesh(mesh_path: Path, output_path: Path, downsample_rate: float, preserve_topology: bool = True,
-                  register: bool = True):
-    """
+                  register: bool = True) -> Path:
+    """Decimate (remove a large portion of) mesh
 
-    :param mesh_path:
-    :param output_path:
-    :param downsample_rate:
-    :param preserve_topology:
-    :param register:
-    :return:
+    Args:
+        mesh_path: path to mesh vtk
+        output_path: output mesh vtk path
+        downsample_rate: decimate percentage, 98.8 means 98.8% removed.
+        preserve_topology (optional): whether to preserve the topology of the mesh in decimation
+        register (optional): whether to register after decimation to decrease errors.
+
+    Returns:
+        Path to the output mesh vtk
     """
     import mirtk
     reader = vtk.vtkGenericDataObjectReader()
@@ -115,6 +123,21 @@ def extract_mesh_from_segmentation(
         segmentation: Path, output_path: Path, labels: List[int] = None, phase: str = None, iso_value: int = 120,
         blur: int = 2, overwrite: bool = False
 ):
+    """Convert mesh to 3D segmentation using Marching Cubes
+
+    Args:
+        segmentation: path to segmentation
+        output_path: output mesh path
+        labels (optional): list of label indices to use to extract segmentations.
+        phase (optional): If labels is not None, then phase can be part of the output name if provided.
+        iso_value (optional):
+        blur (optional):
+        overwrite (optional): whether to overwrite of output exists
+
+    Returns:
+        output segmentation path
+
+    """
     import mirtk
     if not output_path.exists() or overwrite:
         if labels is not None:

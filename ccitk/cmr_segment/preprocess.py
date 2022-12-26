@@ -11,10 +11,75 @@ from ccitk.common.resource import NiiData, CineImages, PhaseImage, Phase
 
 
 class DataPreprocessor:
-    """Find subjects in data_dir, find ED/ES phases, and split into a sequence of phases"""
+    """
+    This module splits the CMR sequence, and then resamples and enlarges each phase.
+    It assumes that input subjects are in the following file structure:
+
+    .. code-block:: text
+
+        /path/
+            subject1/
+                LVSA.nii.gz
+            subject2/
+                LVSA.nii.gz
+            ...
+
+    It then generates output in the following structures:
+
+    .. code-block:: text
+
+        /path/
+            subject1/
+                contrasted_LVSA.nii.gz          ->  Contrasted CMR sequence image
+                lvsa_ED.nii.gz                  ->  ED phase image
+                lvsa_ES.nii.gz                  ->  ES phase image
+                lvsa_SR_ED.nii.gz               ->  Enlarged ED image
+                lvsa_SR_ES.nii.gz               ->  Enlarged ES image
+                lvsa_SR_ED_resampled.nii.gz     ->  Resampled ED image
+                lvsa_SR_ESs_resampled.nii.gz    ->  Resampled ES image
+
+                gray_phases/
+                    lvsa_00.nii.gz              -> Phase 0 image
+                    lvsa_01.nii.gz              -> Phase 1 image
+                    ...
+                resampled/
+                    lvsa_0.nii.gz               ->  Resampled phase 0 image
+                    lvsa_1.nii.gz               ->  Resampled phase 1 image
+                    ...
+                enlarged/
+                    lvsa_0.nii.gz               ->  Enlarged phase 0 image
+                    lvsa_1.nii.gz               ->  Enlarged phase 1 image
+                    ...
+            subject2/
+                ...
+
+    To run only the preprocessor, use the following command:
+
+    .. code-block:: text
+
+        ccitk-cmr-segment -o /output-dir/ --data-dir /input-dir/
+
+    """
     def run(self, data_dir: Path, output_dir: Path, overwrite: bool = False, use_irtk: bool = True,
             do_cine: bool = False, do_contrast: bool = True, preprocess_flip: bool = False)\
             -> Iterable[Tuple[PhaseImage, PhaseImage, CineImages, Path]]:
+        """Preprocess each subject subdirectories in data_dir, containing LVSA.nii.gz,
+        yielding (enlarged_ed_image, enlarged_es_image, enlarged_cine, cine, subject_output_dir)
+
+        Args:
+            data_dir: directory that contains all the subjects to be processed
+            output_dir: output directory
+            overwrite (optional): whether to overwrite the output if exists
+            use_irtk (optional): whether to use irtk or use mirtk to do autocontrast and cardiacphaesdetection
+            do_cine (optional): whether to split the volume into each gray phase and to resample and enlarge each one.
+            do_contrast (optional): whether to do autocontrast
+            preprocess_flip (optional): whether to flip the LVSA.nii.gz image on axis=1. (Useful for RBH data)
+
+        Returns:
+            A generator that yields a tuple,
+            (enlarged_ed_image, enlarged_es_image, enlarged_cine, cine, subject_output_dir)
+
+        """
         do_contrast = True
         for idx, subject_dir in enumerate(sorted(os.listdir(str(data_dir)))):
             subject_output_dir = output_dir.joinpath(subject_dir)
@@ -139,6 +204,17 @@ class DataPreprocessor:
 
     @staticmethod
     def resample_image(image: PhaseImage, output_path: Path, overwrite: bool = False, use_irtk: bool = True) -> PhaseImage:
+        """Resample nifty image to size 1.25, 1.25, 2
+
+        Args:
+            image: phase image resource that points to a path
+            output_path: output path
+            overwrite: whether to overwrite output if exists
+            use_irtk: whether to use irtk or mirtk for resampling
+
+        Returns:
+            a phase image resource that points to the output path
+        """
         output_path.parent.mkdir(exist_ok=True, parents=True)
         if overwrite or not output_path.exists():
             if not use_irtk:
@@ -154,6 +230,17 @@ class DataPreprocessor:
 
     @staticmethod
     def enlarge_image(image: PhaseImage, output_path: Path, overwrite: bool = False, use_irtk: bool = True) -> PhaseImage:
+        """Enlarge nifty image with z=20, value=0
+
+        Args:
+            image: phase image resource that points to a path
+            output_path: output path
+            overwrite: whether to overwrite output if exists
+            use_irtk: whether to use irtk or mirtk for enlarging
+
+        Returns:
+            a phase image resource that points to the output path
+        """
         output_path.parent.mkdir(exist_ok=True, parents=True)
         if overwrite or not output_path.exists():
             if not use_irtk:

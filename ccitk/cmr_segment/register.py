@@ -12,6 +12,78 @@ LOGGER = logging.getLogger("CMRSegment.coregister")
 
 # TODO: multi process
 class Coregister:
+    """
+    Coregister registers each subject's ED/ES mesh with an atlas and transform each subject to the same atlas space.
+
+    It takes input from
+
+    .. code-block:: text
+
+        /path/
+            subject1/
+                landmark_ED.vtk                 ->  ED landmarks
+                landmark_ES.vtk                 ->  ES landmarks
+                mesh/
+                    LVendo_ED.vtk               ->  LV Endo ED mesh
+                    LVendo_ES.vtk               ->  LV Endo ES mesh
+                    LVepi_ED.vtk                ->  LV Epi ED mesh
+                    LVepi_ES.vtk                ->  LV Epi ES mesh
+                    LVmyo_ED.vtk                ->  LV Myo ED mesh
+                    LVmyo_ES.vtk                ->  LV Myo ES mesh
+                    RV_ED.vtk                   ->  RV ED mesh
+                    RV_ES.vtk                   ->  RV ES mesh
+                    RVepi_ED.vtk                ->  RV Epi ED mesh
+                    RVepi_ES.vtk                ->  RV Epi ES mesh
+            subject2/
+                ...
+
+    and generates output
+
+    .. code-block:: text
+
+        /path/
+            subject1/
+                registration/
+                    temp/                           ->  Temporary files
+                    debug/                          ->  Intermediate meshes
+                    landmarks.dof.gz
+                    rigid/                          ->  Meshes after rigid transformation
+                        LVendo_ED.vtk               ->  LV Endo ED mesh
+                        LVendo_ES.vtk               ->  LV Endo ES mesh
+                        LVepi_ED.vtk                ->  LV Epi ED mesh
+                        LVepi_ES.vtk                ->  LV Epi ES mesh
+                        LVmyo_ED.vtk                ->  LV Myo ED mesh
+                        LVmyo_ES.vtk                ->  LV Myo ES mesh
+                        RV_ED.vtk                   ->  RV ED mesh
+                        RV_ES.vtk                   ->  RV ES mesh
+                        RVepi_ED.vtk                ->  RV Epi ED mesh
+                        RVepi_ES.vtk                ->  RV Epi ES mesh
+                    nonrigid/                       -> Meshes after nonrigid transformation
+                        LVendo_ED.vtk               ->  LV Endo ED mesh
+                        LVendo_ES.vtk               ->  LV Endo ES mesh
+                        LVepi_ED.vtk                ->  LV Epi ED mesh
+                        LVepi_ES.vtk                ->  LV Epi ES mesh
+                        LVmyo_ED.vtk                ->  LV Myo ED mesh
+                        LVmyo_ES.vtk                ->  LV Myo ES mesh
+                        RV_ED.vtk                   ->  RV ED mesh
+                        RV_ES.vtk                   ->  RV ES mesh
+
+            subject2/
+                ...
+
+    To run only the coregister, use the following command:
+
+    .. code-block:: text
+
+        ccitk-cmr-segment -o /output-dir/ --data-dir /input-dir/ --coregister --template-dir
+        /template-dir --param-dir /param-dir
+
+    Default template dir is ``ccitk/cmr_segment/resource/params``
+
+    Default param dir is ``ccitk/cmr_segment/resource/``
+
+
+    """
     def __init__(self, template_dir: Path, param_dir: Path, overwrite: bool = False):
         self.template_dir = template_dir
         self.template_landmarks = self.template_dir.joinpath("landmarks2_old.vtk")

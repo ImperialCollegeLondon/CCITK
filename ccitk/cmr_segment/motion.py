@@ -1,3 +1,6 @@
+__all__ = [
+    "MotionTracker",
+]
 import mirtk
 import shutil
 import numpy as np
@@ -63,6 +66,116 @@ class SubjectLandmarks(Landmarks):
 
 
 class MotionTracker:
+    """
+    Compute motion by averaging forward motion and backward motion,
+    transform atlas to subject's ED mesh in subject space,
+    apply motion to the transformed atlas, then register each one back to atlas space.
+
+    It takes input from
+
+    .. code-block:: text
+
+        /path/
+            subject1/
+                landmark_ED.vtk                         ->  ED landmarks
+                refine/
+                    seg_lvsa_SR_ED.nii_refined.nii.gz   ->  Refined ED segmentation
+                enlarged/
+                    lvsa_0.nii.gz                       ->  Enlarged phase 0 image
+                    lvsa_1.nii.gz                       ->  Enlarged phase 1 image
+                    ...
+                mesh/
+                    LVendo_ED.vtk                       ->  LV Endo ED mesh
+                    LVepi_ED.vtk                        ->  LV Epi ED mesh
+                    LVmyo_ED.vtk                        ->  LV Myo ED mesh
+                    RV_ED.vtk                           ->  RV ED mesh
+                    RVepi_ED.vtk                        ->  RV Epi ED mesh
+            subject2/
+                ...
+    and generates output
+
+    .. code-block:: text
+
+        /path/
+            subject1/
+                motion/
+                    dof/                                        -> motion transformation files
+                        ffd_00_to_00.dof.gz                     -> avergaed, composed motion from frame 00 to 00
+                        ffd_00_to_01.dof.gz                     -> avergaed, composed motion from frame 00 to 01
+                        ffd_00_to_02.dof.gz                     -> avergaed, composed motion from frame 00 to 02
+                        ...
+                        ffd_forward_00_to_01.dof.gz             -> forward motion from frame 00 to 01
+                        ffd_forward_01_to_02.dof.gz             -> forward motion from frame 01 to 02
+                        ...
+                        ffd_comp_forward_00_to_02.dof.gz        -> forward composed motion from frame 00 to 02
+                        ffd_comp_forward_00_to_03.dof.gz        -> forward composed motion from frame 00 to 03
+                        ...
+                        ffd_backward_00_to_24.dof.gz            -> backward motion from frame 00 to 24
+                        ffd_backward_02_to_01.dof.gz            -> backward motion from frame 02 to 01
+                        ...
+                        ffd_comp_backward_00_to_01.dof.gz       -> backward composed motion from frame 00 to 01
+                        ffd_comp_backward_00_to_02.dof.gz       -> backward composed motion from frame 00 to 02
+                        ...
+                    register/                                   -> Intermediate registration results when transforming atlas
+                                                                   to match subject ED mesh
+                        lm/                                     -> Atlas mesh after registeration using landmarks
+                            mesh/
+                                LVendo_ED.vtk
+                                LVepi_ED.vtk
+                                LVmyo_ED.vtk
+                                RV_ED.vk
+                            landmarks.dof.gz
+                        rigid/                                  -> Atlas mesh after rigid registeration
+                            mesh/
+                            lv_rigid_ED.dof.gz
+                            rigid_ED.dof.gz
+                            rv_rigid_ED.dof.gz
+                        affine/                                 -> Atlas mesh after affine registeration
+                            mesh/
+                            rv_affine_ED.dof.gz
+                        ffd/                                    -> Atlas mesh after ffd registeration
+                            mesh/
+                            lv_ffd_ED.dof.gz
+                            rv_ffd_ED.dof.gz
+                    seg/                                        -> Warped ED label according to motion
+                        lvsa_00.nii.gz
+                        lvsa_01.nii.gz
+                        ...
+                    TXT/                                        -> motion of transformed atlas mesh in atlas space, txt format
+                        LV_endo/
+                            fr00.txt
+                            fr01.txt
+                            ...
+                        LV_epi/
+                        LV_myo/
+                        RV/
+                    VTK/                                        -> motion of transformed atlas mesh in atlas space, vtk format
+                        LV_endo/
+                            fr00.vtk
+                            fr01.vtk
+                            ...
+                        LV_epi/
+                        LV_myo/
+                        RV/
+            subject2/
+                ...
+
+    To run only the coregister, use the following command:
+
+    .. code-block:: text
+
+        ccitk-cmr-segment -o /output-dir/ --data-dir /input-dir/ --track-motion --template-dir /template-dir
+        --param-dir /param-dir --ffd-motion-cfg /path-to-cfg
+
+
+    Default template dir is ``ccitk/cmr_segment/resource/params``
+
+    Default param dir is ``ccitk/cmr_segment/resource/``
+
+    Default ffd motion cfg is ``ccitk/cmr_segment/resource/ffd_motion_2.cfg``
+
+
+    """
     def __init__(self, param_dir: Path, template_dir: Path, ffd_motion_cfg: Path = None):
         self.param_dir = param_dir
         if ffd_motion_cfg is None:
