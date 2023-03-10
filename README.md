@@ -1,3 +1,5 @@
+[![DOI](https://zenodo.org/badge/574995107.svg)](https://zenodo.org/badge/latestdoi/574995107)
+
 # Introduction
 
 Computational Cardiac Imaging Toolkit (CCITK) is a collection of python functions and applications for
