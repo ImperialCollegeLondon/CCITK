@@ -87,3 +87,5 @@ make html
 make clean html
 make html
 ```
+
+Documentation - https://imperialcollegelondon.github.io/CCITK/
